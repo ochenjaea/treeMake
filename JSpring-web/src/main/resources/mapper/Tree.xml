@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tree">
+
+	<select id="getGroup" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	SELECT
+		SEQ
+		,SEQ
+		,GROUP_NAME
+		,LEVEL
+		,PARENT_SEQ
+	FROM 
+		TB_GROUP
+	ORDER BY
+		PARENT_SEQ DESC
+	</select>
+<!-- 
+	<insert id="joinInsert">
+	INSERT INTO auth_member(
+		user_id,
+		passwd,
+		user_nm,
+		email,
+		receive,
+		use_yn,
+		reg_date
+	)VALUES(
+		#{userId},
+		#{passwd},
+		#{userNm},
+		#{email},
+		#{receive},
+		'Y',
+		/*SYSDATE()*/
+		datetime('now','localtime')
+	)
+	</insert>
+ -->
+</mapper> 

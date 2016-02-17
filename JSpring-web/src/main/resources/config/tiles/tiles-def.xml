@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>
+	<!-- layout -->
+	<definition name=".front">
+        <put-attribute name="title" value="TaxHolic" />
+    </definition>
+    <definition name=".manager">
+        <put-attribute name="title" value="TaxHolic" />
+    </definition>
+	
+	<!-- none -->
+    <definition name="none:**"  template="/WEB-INF/layouts/none/layout.jsp" >
+        <put-attribute name="body" value="/WEB-INF/jsp/{1}.jsp" />
+    </definition>
+    
+    <!-- error -->
+    <definition name="error:**" extends=".front" template="/WEB-INF/layouts/none/layout.jsp" >
+        <put-attribute name="body" value="/WEB-INF/jsp/{1}.jsp" />
+    </definition>
+    
+	<!-- front -->
+    <definition name="front:**" extends=".front"  template="/WEB-INF/layouts/front/layout.jsp">
+        <put-attribute name="header" value="/WEB-INF/layouts/front/header.jsp" />
+        <put-attribute name="body" value="/WEB-INF/jsp/{1}.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/layouts/front/footer.jsp" />
+    </definition>
+    
+	<!-- manager -->
+    <definition name="manager:**" extends=".manager"  template="/WEB-INF/layouts/admin/layout.jsp">
+        <put-attribute name="header" value="/WEB-INF/layouts/admin/header.jsp" />
+        <put-attribute name="body" value="/WEB-INF/jsp/{1}.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/layouts/admin/footer.jsp" />
+    </definition>
+    
+	<!-- popup -->
+    <definition name="popup:**" extends=".front" template="/WEB-INF/layouts/popup/layout.jsp">
+        <put-attribute name="title" value="TaxHolic" />
+        <put-attribute name="body" value="/WEB-INF/jsp/{1}.jsp" />
+    </definition>
+    
+      <!-- script -->
+    <definition name="script" template="/WEB-INF/layouts/script.jsp"> </definition>
+      <!-- css -->
+    <definition name="css" template="/WEB-INF/layouts/css.jsp"> </definition>
+    
+	
+</tiles-definitions>

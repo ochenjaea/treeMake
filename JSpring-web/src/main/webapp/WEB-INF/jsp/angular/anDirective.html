@@ -1,0 +1,91 @@
+<html>
+	
+	<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+	
+	<link rel="stylesheet"href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+	<script type="text/javascript" src="/js/angular.min.js"></script>
+		 
+	<script type="text/javascript">
+		var myApp = angular.module('myApp', []);
+		
+		/*
+ 		.directive() 메서드로 디렉티브를 선언하고 디렉티브 이름으로 ‘customButton’을 사용했다. 
+ 		디렉티브 이름에 대문자를 사용하면 DOM에서는 하이픈으로 이를 구분해서 사용하게 된다
+
+		restrict: 어떻게 요소의 사용을 제한할 수 있을지 다시 한번 생각해보자. 오래된 IE를 지원해야하는 프로젝트를 진행중이라면 분명 속성/클래스 정의가 필요할 것이다. 
+		‘A’라고 지정하면 속성 으로만 사용할 수 있다는 의미이고 ‘E’는 요소, ‘C’는 클래스, ‘M’은 주석 으로만 사용할 수 있다는 것을 의미한다. 
+		기본 값은 ‘EA’이고 이 처럼 여러 개의 제한을 동시에 걸수도 있다.
+
+		replace: 디렉티브에 정의한 DOM의 마크업을 변경할 수 있음을 의미한다. 예제를 보면 처음의 DOM이 디렉티브의 템플릿으로 어떻게 변경됐는지 알 수 있을 것이다.
+
+		transclude: 간단하게 말해서 집어넣는 것이다. transclude를 이용하면 기존의 DOM 내용을 디렉티브안에 복사할 수 있다. ‘Click me’라는 문자열이 렌더링될 때 디렉티브로 옮겨진 것을 봤을 것이다.
+
+		template: 템플릿은 주입할 마크업을 의미한다. HTML의 아주 작은 일부분을 정의할 때 특히 좋다. 주입된 템플릿은 Angular로 컴파일되며 이로 인해 handlebar 템플릿 태그도 사용할 수 있다.
+
+		templateUrl: template 속성과 비슷하지만 <script> 태그 혹은 파일을 지정할 때 사용한다. HTML의 일부분을 다른 파일로 관리할 필요가 있을 때 템플릿 파일의 URL로 파일 이름과 경로(보통 templates 디렉토리)를 표시해주면 된다.
+
+		myApp.directive('customButton', function () {
+		  return {
+		    templateUrl: 'templates/customButton.html'
+		    // 나머지 디렉티브 내용...
+		  };
+		});
+
+
+		*/
+		myApp.directive('customButton', function () {
+		  return {
+		    restrict: 'A',
+		  //  restrict: 'E',
+		//    restrict: 'C',
+		    replace: true,
+		    transclude: true,
+		    template: '<a href="" class="myawesomebutton" ng-transclude>' +
+		                  '<i class="icon-ok-sign"></i>' +
+		                  '</a>',
+		    link: function (scope, element, attrs) {
+		      // DOM 조작과 이벤트 설정은 여기서!
+		    }
+		  };
+		});
+	</script>	
+
+	</head>
+
+	<body >
+
+
+		<div>
+디렉티브(Directives from existing scripts/plugins 포스트를 참고)의 가장 간단한 형태는 애플리케이션이 필요한 곳에 여러 번 사용할 수 있는 작은 HTML 조각 형태다. <br>
+디렉티브를 사용하면 애플리케이션에 별다른 노력없이도 쉽게 DOM을 주입하거나 사용자 정의 DOM의 상호작용을 적용할 수 있다. <br>
+디렉티브는 간단하지 않을 뿐더러 러닝커브가 생각보다 꽤 높긴 하지만 다음 절부터 읽어보면 분명 도움이 될 것이다.<br><br>
+
+그래서 디렉티브가 어디에 유용한 걸까? DOM 컴포넌트를 포함해서 많은 부분에 유용하다. 앱에서 사용하는 UI에 따라 다르긴 하지만 탭과 네비게이션 요소 등에 특히 유용하다. <br>
+이런 식으로 설명해보겠다. ng-show 나 ng-hide 를 생각해본적이 있다면 그게 바로 디렉티브다(DOM을 주입하지는 않지만).<br><br>
+		</div>
+
+		<div ng-app="myApp">
+
+			<div>----------------------------- template ----------------------------------</div>
+			<!-- 1: 속성으로 정의 -->
+			<div custom-button>Click me 속성</div>
+
+			<!-- 2: 요소로 정의 -->
+			<div>
+			    <custom-button>Click me 요소</custom-button>
+			</div>
+
+			<!-- 3: 클래스로 정의(IE 구버전 호환을 위해) -->
+			<div class="custom-button">Click me 클레스</div>
+
+			<!-- 4: 주석으로 정의 (데모로는 별로 안좋긴 하다) -->
+			<!-- directive: custom-button -->
+			
+
+		</div>
+
+	</body>
+
+
+</html>

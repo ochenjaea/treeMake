@@ -1,0 +1,11 @@
+{
+  "user" : [
+  	{"disabled" : true, "id" : 1,"name" : "name1", "title":"title1","date": "2013-09-03T13:15:11Z"},
+  	{"checked" : false, "id" : 2,"name" : "name2", "title":"title2","date": "2013-09-03T13:15:11Z"},
+  	{"checked" : false, "id" : 3,"name" : "name3", "title":"title3","date": "2013-09-03T13:15:11Z"},
+  	{"checked" : false, "id" : 4,"name" : "name4", "title":"title4","date": "2013-09-03T13:15:11Z"},
+  	{"checked" : true, "id" : 5,"name" : "name5", "title":"title5","date": "2013-09-03T13:15:11Z"},
+  	{"checked" : false, "disabled" : true, "id" : 6,"name" : "name6", "title":"title6","date": "2013-09-03T13:15:11Z"}
+  ] 
+	
+}  

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+	 
+	 <property name="output" value="d:/logs" />
+	 
+	 <appender name="FILE_LOG_APP" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${output}/app_%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger - %msg%n</Pattern>
+		</layout>
+	</appender>
+	 
+	
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<!--  <Pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</Pattern> -->
+			<Pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger - %msg%n</Pattern>
+		</layout>
+	</appender>
+
+	<logger name="jdbc.sqlonly" level="debug" additivity="false" >
+		<appender-ref ref="console" />
+	</logger>
+	<logger name="org.springframework" level="info" additivity="false" >
+		<appender-ref ref="console" />
+		<appender-ref ref="FILE_LOG_APP" />
+	</logger>
+	<logger name="com.taxholic.core" level="info"	additivity="false">
+		<appender-ref ref="console" />
+	</logger>
+
+	<root level="error">
+		<appender-ref ref="console" />
+	</root>
+	
+</configuration>

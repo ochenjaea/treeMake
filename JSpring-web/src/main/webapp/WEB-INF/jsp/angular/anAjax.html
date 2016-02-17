@@ -1,0 +1,181 @@
+<html>
+	
+	<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+	<link rel="stylesheet"href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+	<script type="text/javascript" src="/js/angular.min.js"></script>
+	<style>
+		body,td, th{
+			padding:5px;
+			font-size: 9pt;
+			font-family: "맑은 고딕"
+		}
+	</style>
+	<script type="text/javascript">
+
+
+		function JSONtoString(object) {
+		    var results = [];
+		    for (var property in object) {
+		        var value = object[property];
+		        if (value)
+		            results.push(property.toString() + ': ' + value);
+		        }
+		                 
+		        return '{' + results.join(', ') + '}';
+		}
+
+		var myApp = angular.module('myApp', []);
+
+		/*
+		‘달러 http’라고 입력하자. 이제부터 좋은 친구가 되어줄 것이다. $http 메서드는 Angular가 서버 데이터에 접근하는 기능을 멋지게 래핑한 메서드로 눈감고 사용할 수 있을 정도로 쉽다.
+		다음은 ‘GET’ 요청을 보내고 서버에서 데이터를 받아오는 간단한 예제다. 문법이 jQuery와 꽤 비슷해서 금방 이해할 수 있을 것이다:
+		*/
+		myApp.controller('MainCtrl', ['$scope', '$http', function ($scope, $http) {
+
+			  // 사용자 객체를 생성
+			$scope.dataList = {};
+			
+			
+			 // 서버에 사용자 이름을 요청
+			$http({
+				method: 'GET',
+			    url: 'http://localhost:8888/jsonData.json'
+			}).success(function (data, status, headers, config) {
+			    // 서버로부터 받아온 사용자 이름을 모델에 할당!
+			    $scope.dataList = data.user;
+			    
+			}).error(function (data, status, headers, config) {
+			    alert("이런. 뭔가 잘못되었음! :(");
+			});
+			    
+			$scope.send = function() {
+				angular.forEach(idCheck, function(obj) {
+					alert(obj.id)
+				    /* do something for all key: value pairs */
+				});
+			 };
+			    
+			//Row 추가
+			$scope.addRow = function(){		
+				$scope.dataList.push({ 'name' : 'merong', 'title': '타이틀', 'date' : new Date()});
+			};
+			    
+			//Row 삭제    
+			$scope.deleteRow = function (index) {
+				if($scope.dataList.length > 1)
+				$scope.dataList.splice(index, 1)
+			};
+			
+			//선택삭제
+			$scope.delData = [];
+			$scope.archive = function() {
+				$scope.delData = [];
+				var oldList = $scope.dataList;
+			    $scope.dataList = [];
+			   	angular.forEach(oldList, function(list) {
+					if (!list.checked) {
+						$scope.dataList.push(list);
+					}else{
+						$scope.delData.push(list.id);
+					}
+			    });
+				console.log($scope.delData)
+			};
+			
+			//disabled
+			$scope.disabled = function (list) {
+				return (list.disabled == true) ?  true : false
+            };
+			    
+		}]);
+	</script>	
+
+	</head>
+
+	<body >
+
+
+		<div>
+HTML에 이걸 넣을 필요 없다. 동적인 HTML 조각을 만들기 위해 애플리케이션이 무엇을 해야 하는지 선언하는 선언적 바인딩을 사용할 시간이다. <br>
+Angular가 기본으로 제공하고 어떤 콜백이나 상태 변경 없이도 데이터를 순회하며 결과를 렌더링하는 ng-repeat 디렉티브를 사용해보자:<br><br>
+		</div>
+
+		<div ng-app="myApp">
+			<div ng-controller="MainCtrl">
+			<!-- 
+				<ul ng-repeat="list in dataList">
+				  <li ng-repeat="(key, val) in list">
+				    {{key}}: {{val | date:'MMM d, y h:mm:ss a'}}
+				  </li>
+				</ul>
+			 -->	
+				Total : {{dataList.length}}
+				<button ng-click="addRow()">추가</button>
+				<button ng-click="archive()">삭제</button>
+				<table border=1>
+				    <tr>
+				    	<th><input type="checkbox" ></th>
+				    	<th>name</th>
+				    	<th>title</th>
+				    	<th>date</th>
+				    	<th></th>
+				    </tr>
+				    <tr ng-repeat="list in dataList">
+				    	<td><input type="checkbox"  value="{{ list.id }}"  ng-model="list.checked" ng-disabled="disabled(list)"></td>
+						<!-- 				    	
+				        <td ng-repeat="(key, val) in list" >{{ key=='title' &&  val  || val | date:'y/MM/dd h:mm:ss a'}}</td>
+				         -->
+				        <td ng-repeat="(key, val) in list"  ng-if="key != 'id' && key !='checked' && key !='disabled'">{{ val | date:'y/MM/dd h:mm:ss a' }}</td>
+				        
+				        <!-- 
+				        이 방법은 내부에 클릭 핸들러를 정의하는 것과 여러 가지 면에서 많이 다르다. 
+				        이유는 추후 살펴보기로 하자. $index 를 매개변수로 넘긴 게 보일 텐데 Angular가 어떤 메일을 지워야 하는지 알려주기 위함이다(얼마나 많은 코드와 로직이 필요없는지 보라!).
+				         -->
+				        <td><a href="#" ng-click="deleteRow($index)">삭제</a></td>
+				    </tr>
+				</table>
+				<button ng-click="send()">전송</button>
+				<br><br>
+				
+<div>
+선언적 DOM 메서드<br><br>
+이제 DOM 메서드 로 넘어가보자. 역시 디렉티브이며 보통 스크립트 로직으로 작성해서 DOM에 기능을 제공하는 형태다. <br>
+이를 잘 설명할 수 있는 예제로 간단한 토글 네비게이션이 좋겠다. ng-show 와 ng-click 을 사용해서 깔끔한 토글 네비게이션을 만들어보자:
+		</div>
+				
+				<a href="" ng-click="toggle = !toggle">Toggle nav</a>
+				  <ul ng-show="toggle">
+				    <li>Link 1</li>
+				    <li>Link 2</li>
+				    <li>Link 3</li>
+				</ul>
+				
+				<br><br>
+				
+				
+	<div>
+MVC와 MVVM의 차이점<br><br>
+
+AngularJS 포스트를 마무리 지으면서 AngularJS의 자부심인 MVC/MVVM의 차이점에 대해 간단히 다뤄볼까 한다:<br>
+
+MVC: 컨트롤러와 통신한다, 모델-뷰-컨트롤러<br>
+
+MVVM: 기술적으로는 자기자신과 통신하는 선언적 데이터 바인딩이다. 모델-뷰-뷰-모델. 모델은 뷰와 통신하고 뷰는 모델과 통신한다.<br>
+ Angular의 양방향 데이터 바인딩은 별다른 작업없이도 스스로 알아서 통신한다. 또한 컨트롤러없이 로직을 작성할 수도 있다!<br><br>
+
+예를 들어 다음은 데이터를 제공하는 컨트롤러없이도 ng-repeat 을 생성하는 예제다:
+		</div>			
+				
+				<li ng-repeat="number in [1,2,3,4,5,6,7,8,9]">
+				  {{ number }}
+				</li>
+								
+			
+			</div>
+		</div>
+
+	</body>
+
+
+</html>
