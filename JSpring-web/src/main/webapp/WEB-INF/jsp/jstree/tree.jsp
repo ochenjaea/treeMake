@@ -11,13 +11,13 @@
 	});
 </script>
  <div>
- <h1>HTML demo</h1>
-	<h1>jstree_demo loading demo</h1>
-	<div class="col-md-4 col-sm-8 col-xs-8">
+	<h1>TREE</h1>
+	 <!-- <div class="col-md-4 col-sm-8 col-xs-8">
 						<button type="button" class="btn btn-success btn-sm" onclick="demo_create();"><i class="glyphicon glyphicon-asterisk"></i> Create</button>
 						<button type="button" class="btn btn-warning btn-sm" onclick="demo_rename();"><i class="glyphicon glyphicon-pencil"></i> Rename</button>
 						<button type="button" class="btn btn-danger btn-sm" onclick="demo_delete();"><i class="glyphicon glyphicon-remove"></i> Delete</button>
-					</div>
+					</div> --> 
+	<div>추가, 삭제, 이름변경, 드래그</div>
 	<div id="jstree_demo" class="demo"></div>
 </div>
 
@@ -49,15 +49,20 @@
 		ref.delete_node(sel);
 	};
 	
-	$('#jstree_demo').jstree({
-		'core' : {
+	$('#jstree_demo')
+	.jstree({
+		"core" : {
+			"animation" : 0,
+			"check_callback" : true,
+			'force_text' : true,
+			"themes" : { "stripes" : true },
 			'data' : {
-				"animation" : 0,
-				"check_callback" : true,
-				'force_text' : true,
-				"url" : "/ajax/listJson.do",
-				"data" : function (node) {
-					return { "id" : node.id };
+				'url' : function (node) {
+					return node.id === '#' ? '/ajax/listJson.do?node=tree_0' : '/ajax/listJson.do?node='+node.id;
+				},
+				//'url' :'/ajax/listJson.do',
+				'data' : function (node) {
+					return { 'id' : node.id };
 				}
 			}
 		},
@@ -67,30 +72,24 @@
 			"default" : { "valid_children" : ["default","file"] },
 			"file" : { "icon" : "glyphicon glyphicon-file", "valid_children" : [] }
 		},
-		"plugins" : [ "contextmenu", "dnd", "search", "state", "types", "wholerow"],
-		
-		contextmenu: {items: context_menu}
-	});
+		"plugins" : [ "contextmenu", "dnd", "search", "state", "types", "wholerow" ],
+		"contextmenu": {items: context_menu}
+	}).bind("move_node.jstree", function (event, data) {
+        treeControl("move",data);
+    }).bind("rename_node.jstree", function (event, data) {
+    	treeControl("renameC",data);
+    });
 	
 	function context_menu(node){
 		var tree = $('#jstree_demo').jstree(true);
-	 
-		// The default set of all items
+		
         return {
             "Create": {
                 "separator_before": false,
                 "separator_after": false,
                 "label": "Create",
                 "action": function (obj) { 
-                	var ref = $('#jstree_demo').jstree(true),
-        			sel = ref.get_selected();
-	        		if(!sel.length) { return false; }
-	        		sel = sel[0];
-                    $node = tree.create_node(obj);
-                    tree.edit($node);
-                    
-                    treeCreate();
-                    
+                    treeControl('create');
                 }
             },
             "Rename": {
@@ -98,7 +97,7 @@
                 "separator_after": false,
                 "label": "Rename",
                 "action": function (obj) { 
-                    tree.edit(obj);
+                	treeControl('rename');
                 }
             },                         
             "Remove": {
@@ -107,20 +106,46 @@
                 "label": "Remove",
                 "action": function (obj) { 
                     tree.delete_node(obj);
+                    treeControl('remove');
                 }
             }
         };
-	 
-	 
 	    return items;
 	}
 	
-	var treeCreate = function(){
-		jsonCommon();
+	var treeControl = function(flag,data){
+		
+		var ref = $('#jstree_demo').jstree(true),
+		sel = ref.get_selected();
+		if(!sel.length) { 
+			return false; 
+		}
+		sel = sel[0];
+		
+		var param = {
+			type : flag
+		};
+		
+		if(flag=='rename'){
+			ref.edit(sel);		
+		}else if(flag=='renameC' || flag=='move'){
+			param["id"] = data.node.id;
+			if(flag=='renameC'){
+				param["parent_id"] = data.node.parent;
+				param["old_text"] = data.old;
+				param["new_text"] = data.text;
+			}else{
+				param["parent_id"] = data.parent;
+				param["old_parent"] = data.old_parent;
+			}
+			jsonCommon(flag,param);
+		}else{
+			param["data"] = sel;
+			jsonCommon(flag,param);
+		}
 	};
 	
-	var jsonCommon = function(){
-		var param = "test=hi";
+	var jsonCommon = function(flag,param){
 		
 		$.ajax({
 			type:"POST",

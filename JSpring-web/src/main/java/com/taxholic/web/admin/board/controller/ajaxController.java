@@ -31,11 +31,11 @@ public class ajaxController{
 	
 	@RequestMapping(value = "/listJson.do", method = RequestMethod.GET)
 	@ResponseBody
-	public Object getJson(Model model) {
+	public Object getJson(HttpServletRequest request,Model model) {
 		//model.addAttribute(treeService.getList());
 	    //return "jsonView";
 		//return treeService.getList();
-		List<Map<String, Object>> resultMap = (List<Map<String, Object>>) treeService.getList();
+		List<Map<String, Object>> resultMap = (List<Map<String, Object>>) treeService.getList(request);
 	    
 		return resultMap;
 	}
@@ -46,11 +46,11 @@ public class ajaxController{
 		//model.addAttribute(treeService.getList());
 	    //return "jsonView";
 		//return treeService.getList();
-		System.out.println(request.getParameter("test"));
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		
-		resultMap.put("hi", "hello");
-	    
+		
+		treeService.treeControl(request,response);
+		resultMap.put("code", "ok");
 		return resultMap;
 	}
 	/*

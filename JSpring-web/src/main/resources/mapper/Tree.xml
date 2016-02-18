@@ -4,18 +4,36 @@
 
 <mapper namespace="tree">
 
-	<select id="getGroup" parameterType="java.util.HashMap" resultType="java.util.HashMap">
-	SELECT
-		SEQ
-		,SEQ
-		,GROUP_NAME
-		,LEVEL
-		,PARENT_SEQ
-	FROM 
-		TB_GROUP
-	ORDER BY
-		PARENT_SEQ DESC
+	<select id="getTree" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT
+			SEQ
+			,SEQ
+			,GROUP_NAME
+			,PARENT_SEQ
+		FROM 
+			TB_GROUP
+		WHERE PARENT_SEQ = #{parent_id};
 	</select>
+	
+	<select id="checkChildNode" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT
+			COUNT(SEQ) AS CNT
+		FROM 
+			TB_GROUP
+		WHERE PARENT_SEQ = #{seq};
+	</select>
+	
+	<insert id="insertTreeNode" parameterType="java.util.HashMap">
+		INSERT INTO TB_GROUP(
+			GROUP_NAME
+			,PARENT_SEQ
+		) VALUES(
+			'new Node'
+			,#{parent_id}
+		)
+		
+		
+	</insert>
 <!-- 
 	<insert id="joinInsert">
 	INSERT INTO auth_member(
