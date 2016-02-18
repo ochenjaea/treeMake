@@ -18,6 +18,10 @@
 						<button type="button" class="btn btn-danger btn-sm" onclick="demo_delete();"><i class="glyphicon glyphicon-remove"></i> Delete</button>
 					</div> --> 
 	<div>추가, 삭제, 이름변경, 드래그</div>
+	<div>Search</div>
+	<div>
+		<input type="text" id="treeSearchWord">
+	</div>
 	<div id="jstree_demo" class="demo"></div>
 </div>
 
@@ -42,10 +46,8 @@
 		sel = sel[0];
 		ref.edit(sel);
 	};
-	function demo_delete() {
-		var ref = $('#jstree_demo').jstree(true),
-			sel = ref.get_selected();
-		if(!sel.length) { return false; }
+	function demo_delete(id) {
+		var sel = id.replace("_anchor","");
 		ref.delete_node(sel);
 	};
 	
@@ -66,19 +68,24 @@
 				}
 			}
 		},
-		"types" : {
-			"#" : { "max_children" : 1, "max_depth" : 4, "valid_children" : ["root"] },
-			"root" : { "icon" : "/static/3.2.1/assets/images/tree_icon.png", "valid_children" : ["default"] },
-			"default" : { "valid_children" : ["default","file"] },
-			"file" : { "icon" : "glyphicon glyphicon-file", "valid_children" : [] }
-		},
-		"plugins" : [ "contextmenu", "dnd", "search", "state", "types", "wholerow" ],
+		"plugins" : [ "contextmenu", "dnd", "search", "state","checkbox"],
 		"contextmenu": {items: context_menu}
 	}).bind("move_node.jstree", function (event, data) {
         treeControl("move",data);
     }).bind("rename_node.jstree", function (event, data) {
     	treeControl("renameC",data);
     });
+	
+	var to = false;
+	$('#treeSearchWord').keyup(function () {
+	    if(to) {
+	    	clearTimeout(to); 
+	    }
+	    to = setTimeout(function () {
+			var v = $('#treeSearchWord').val();
+			$('#jstree_demo').jstree(true).search(v);
+		}, 250);
+	  });
 	
 	function context_menu(node){
 		var tree = $('#jstree_demo').jstree(true);
@@ -104,9 +111,10 @@
                 "separator_before": false,
                 "separator_after": false,
                 "label": "Remove",
-                "action": function (obj,data) { 
-                    tree.delete_node(obj);
-                  	treeControl('remove');
+                "action": function (obj,data) {
+                    tree.delete_node(obj.reference.attr("id"));
+                  	//treeControl('remove');
+                  	demo_delete();
                 }
             }
         };
@@ -137,6 +145,7 @@
 			}else{
 				param["parent_id"] = data.parent;
 				param["old_parent"] = data.old_parent;
+				return;
 			}
 			jsonCommon(flag,param);
 		}else{
@@ -154,7 +163,7 @@
 			contentType: 'application/x-www-form-urlencoded; charset=utf-8',
 			dataType : "json",
 			success : function(data) {
-				$.jstree.reference('#jstree_demo').refresh();
+			//	$.jstree.reference('#jstree_demo').refresh();
 			},
 			error : function(e) {
 				console.log(e);

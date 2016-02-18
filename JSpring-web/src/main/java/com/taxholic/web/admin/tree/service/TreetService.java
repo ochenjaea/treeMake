@@ -115,7 +115,6 @@ public class TreetService{
 	}
 	
 	private boolean removeTree(HttpServletRequest request){
-		Map<String,Object> paramMap = new HashMap<String,Object>();
 		List<Object> removeKeys = new ArrayList<Object>();
 		seqMap = new HashMap<Object, Object>();
 		
