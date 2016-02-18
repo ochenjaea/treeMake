@@ -78,7 +78,9 @@
         treeControl("move",data);
     }).bind("rename_node.jstree", function (event, data) {
     	treeControl("renameC",data);
-    });
+    }.bind("remove_node.jstree", function (event, data) {
+    	console.log(data)
+    }));
 	
 	function context_menu(node){
 		var tree = $('#jstree_demo').jstree(true);
@@ -104,9 +106,9 @@
                 "separator_before": false,
                 "separator_after": false,
                 "label": "Remove",
-                "action": function (obj) { 
+                "action": function (obj,data) { 
                     tree.delete_node(obj);
-                    treeControl('remove');
+                  	treeControl('remove');
                 }
             }
         };
@@ -146,7 +148,7 @@
 	};
 	
 	var jsonCommon = function(flag,param){
-		
+		console.log(param);
 		$.ajax({
 			type:"POST",
 			url : "/ajax/treeControl.do",
@@ -154,7 +156,7 @@
 			contentType: 'application/x-www-form-urlencoded; charset=utf-8',
 			dataType : "json",
 			success : function(data) {
-				$('#jstree_demo').jstree(true).redraw(true);
+				$.jstree.reference('#jstree_demo').refresh();
 			},
 			error : function(e) {
 				console.log(e);

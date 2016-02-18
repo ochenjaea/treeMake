@@ -15,9 +15,17 @@
 		WHERE PARENT_SEQ = #{parent_id};
 	</select>
 	
-	<select id="checkChildNode" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	<select id="checkChildNodeCnt" parameterType="java.util.HashMap" resultType="java.util.HashMap">
 		SELECT
 			COUNT(SEQ) AS CNT
+		FROM 
+			TB_GROUP
+		WHERE PARENT_SEQ = #{seq};
+	</select>
+	
+	<select id="checkChildNode" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT
+			SEQ
 		FROM 
 			TB_GROUP
 		WHERE PARENT_SEQ = #{seq};
@@ -31,9 +39,26 @@
 			'new Node'
 			,#{parent_id}
 		)
-		
-		
 	</insert>
+	
+	<delete id="removeTreeNode">
+		DELETE FROM TB_GROUP
+			WHERE
+		SEQ IN
+		<foreach item="item" index="index" collection="list"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	
+	<update id="updateTreeNodeText" parameterType="java.util.HashMap">
+		UPDATE TB_GROUP SET
+			GROUP_NAME = #{new_text}
+		WHERE
+			SEQ = #{seq}
+			AND PARENT_SEQ = #{parent_id}
+			AND GROUP_NAME = #{old_text}
+	</update>
 <!-- 
 	<insert id="joinInsert">
 	INSERT INTO auth_member(
