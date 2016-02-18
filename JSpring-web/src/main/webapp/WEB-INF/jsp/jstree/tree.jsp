@@ -78,9 +78,7 @@
         treeControl("move",data);
     }).bind("rename_node.jstree", function (event, data) {
     	treeControl("renameC",data);
-    }.bind("remove_node.jstree", function (event, data) {
-    	console.log(data)
-    }));
+    });
 	
 	function context_menu(node){
 		var tree = $('#jstree_demo').jstree(true);
