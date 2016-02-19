@@ -70,43 +70,65 @@ public class TreetService{
 		}
 	}
 	
-	public void treeControl(HttpServletRequest request, HttpServletResponse response){
+	public Map<String, Object> treeControl(HttpServletRequest request, HttpServletResponse response){
 		int status = dataMap.get(request.getParameter("type"));
-		
+		Map<String, Object> resultMap = new HashMap<String, Object>();
 		switch(status){
 		case 0:
-			addTree(request);
+			int resultSeq = addTree(request);
+			resultMap.put("parent_id", request.getParameter("data"));
+			resultMap.put("seq", resultSeq);
+			resultMap.put("type", "create");
+			resultMap.put("result", "ok");
 			break;
 		case 1:
 			removeTree(request);
+			resultMap.put("type", "remove");
+			resultMap.put("result", "ok");
 			break;
 		case 2:
 			updateNameTree(request);
+			resultMap.put("type", "updateName");
+			resultMap.put("result", "ok");
 			break;
 		case 3:
-			System.out.println("move");
+			updatePositionTree(request);
+			resultMap.put("type", "updatePosition");
+			resultMap.put("result", "ok");
 			break;
 		default:
 			System.out.println("exception");
+			resultMap.put("result", "nok");
 			break;
 		}
+		
+		return resultMap;
 	}
 	
-	private boolean addTree(HttpServletRequest request){
+	/**
+	 * 트리 노드 추가
+	 * @param request
+	 * @return
+	 */
+	private int addTree(HttpServletRequest request){
 		
 		Map<String,Object> paramMap = new HashMap<String,Object>();
 		paramMap.put("parent_id", request.getParameter("data").toString().replace("tree_", ""));
 		
 		this.dao.insert("tree.insertTreeNode", paramMap);
+		return Integer.parseInt(paramMap.get("seq").toString());
 		
-		return true;
 	}
 	
+	/**
+	 * 트리 노드 이름 수정
+	 * @param request
+	 * @return
+	 */
 	private boolean updateNameTree(HttpServletRequest request){
 		
 		Map<String,Object> paramMap = new HashMap<String,Object>();
 		paramMap.put("seq", request.getParameter("id").toString().replace("tree_", ""));
-		paramMap.put("parent_id", request.getParameter("parent_id").toString().replace("tree_", ""));
 		paramMap.put("new_text", request.getParameter("new_text").toString());
 		paramMap.put("old_text", request.getParameter("old_text").toString());
 		
@@ -114,6 +136,11 @@ public class TreetService{
 		return true;
 	}
 	
+	/**
+	 * 트리 노드 삭제
+	 * @param request
+	 * @return
+	 */
 	private boolean removeTree(HttpServletRequest request){
 		List<Object> removeKeys = new ArrayList<Object>();
 		seqMap = new HashMap<Object, Object>();
@@ -147,7 +174,30 @@ public class TreetService{
 		}
 	}
 	
-	private boolean updatePositionTree(){
+	/**
+	 * 트리 노드 이동
+	 * @param request
+	 * @return
+	 */
+	private boolean updatePositionTree(HttpServletRequest request){
+		Map<String,Object> paramMap = new HashMap<String,Object>();
+		
+		String parent_id =  request.getParameter("parent_id").toString().replace("tree_", "");
+		String old_parent_id =  request.getParameter("old_parent").toString().replace("tree_", "");
+		
+		if(parent_id.equals("#")){
+			parent_id = "0";
+		}
+		
+		if(old_parent_id.equals("#")){
+			old_parent_id = "0";
+		}
+		
+		paramMap.put("seq", request.getParameter("id").toString().replace("tree_", ""));
+		paramMap.put("new_parent", parent_id);
+		paramMap.put("old_parent", old_parent_id);
+		
+		this.dao.update("tree.updateTreeNodePosition", paramMap);
 		
 		return true;
 	}

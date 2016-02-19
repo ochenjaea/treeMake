@@ -36,9 +36,8 @@ public class ajaxController{
 	@RequestMapping(value = "/treeControl.do",method={RequestMethod.GET, RequestMethod.POST})
 	@ResponseBody
 	public Object treeControl(HttpServletRequest request, HttpServletResponse response, Model model) {
-		Map<String, Object> resultMap = new HashMap<String, Object>();
-		treeService.treeControl(request,response);
-		resultMap.put("code", "ok");
+		
+		Map<String, Object> resultMap = treeService.treeControl(request,response);
 		return resultMap;
 	}
 }

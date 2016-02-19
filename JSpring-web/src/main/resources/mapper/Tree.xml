@@ -39,6 +39,9 @@
 			'new Node'
 			,#{parent_id}
 		)
+		<selectKey keyProperty="seq" resultType="long" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
 	</insert>
 	
 	<delete id="removeTreeNode">
@@ -56,29 +59,15 @@
 			GROUP_NAME = #{new_text}
 		WHERE
 			SEQ = #{seq}
-			AND PARENT_SEQ = #{parent_id}
 			AND GROUP_NAME = #{old_text}
 	</update>
-<!-- 
-	<insert id="joinInsert">
-	INSERT INTO auth_member(
-		user_id,
-		passwd,
-		user_nm,
-		email,
-		receive,
-		use_yn,
-		reg_date
-	)VALUES(
-		#{userId},
-		#{passwd},
-		#{userNm},
-		#{email},
-		#{receive},
-		'Y',
-		/*SYSDATE()*/
-		datetime('now','localtime')
-	)
-	</insert>
- -->
+
+
+	<update id="updateTreeNodePosition" parameterType="java.util.HashMap">
+		UPDATE TB_GROUP SET
+			PARENT_SEQ = #{new_parent}
+		WHERE
+			SEQ = #{seq}
+			AND PARENT_SEQ = #{old_parent}
+	</update>
 </mapper> 
