@@ -37,9 +37,12 @@
 			<input type="text" id="treeSearchWord">
 		</div>
 		
-		<div>선택된 node의 URL</div>
-		<div>
-			<input type="text" id="selectNodeUrl">
+		<div id="showUrl">
+			<div>선택된 node의 URL</div>
+			<div>
+				<input type="text" id="selectNodeUrl">
+				<input type="button" value="변경" onclick="demo_changeUrl()">
+			</div>
 		</div>
 	</div> 
 	
@@ -54,17 +57,18 @@
 		if($.cookie('mode') == undefined || $.cookie('mode') == "user"){
 			$.cookie('mode', 'user', { expires: 7, path: '/', secure: false });
 			$("#mode").html("사용자 모드");
+			$("#showUrl").hide();
 		}else{
 			$.cookie('mode', 'admin', { expires: 7, path: '/', secure: false });
 			$("#mode").html("관리자 모드");
+			$("#showUrl").show();
 		}
-		
-		
 		drawTree();
 	});
 	
 	var tree =  $('#jstree_demo').jstree(true);
-	var addressLinkMap = new HashMap();
+	var selectedNode = "";
+	
 	var drawTree = function(){
 		if($.cookie('mode') == "user"){
 			$('#jstree_demo').jstree({
@@ -121,8 +125,8 @@
 		      
 		    }).on('changed.jstree', function(e,data) { 
 		    	if(data.event != undefined){
-		    		//$("#"+$(e.target).closest("li").attr("id")).attr("title",tree.get_selected($(e.target).closest("li").attr("id"))[0].original.href) 
 		    		$("#selectNodeUrl").val(data.node.original.href);
+		    		selectedNode = data.node.id;
 		        }
 		    });
 		}
@@ -181,9 +185,11 @@
 		if($.cookie('mode') == undefined || $.cookie('mode') == "user"){
 			$.cookie('mode', 'admin', { expires: 7, path: '/', secure: false });
 			$("#mode").html("관리자 모드");
+			$("#showUrl").show();
 		}else{
 			$.cookie('mode', 'user', { expires: 7, path: '/', secure: false });
 			$("#mode").html("사용자 모드");
+			$("#showUrl").hide();
 		}
 		
 		drawTree();
@@ -210,6 +216,11 @@
 		tree.delete_node(sel);
 		treeControl('remove',sel);
 	};
+	
+	var demo_changeUrl = function(){
+		
+	}
+	
 	
 	var demo_check_delete = function(){
 		var sel = tree.get_selected();
