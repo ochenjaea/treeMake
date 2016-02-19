@@ -48,7 +48,7 @@ public class TreetService{
 			Map<String,Object> treeMap = new HashMap<String, Object>();
 			treeMap.put("id","tree_"+list.get(i).get("SEQ"));
 			treeMap.put("text",list.get(i).get("GROUP_NAME"));
-			
+			treeMap.put("href","http://www.naver.com");
 			treeMap.put("children",checkChildren((int) list.get(i).get("SEQ")));
 			returnList.add(treeMap);
 		}

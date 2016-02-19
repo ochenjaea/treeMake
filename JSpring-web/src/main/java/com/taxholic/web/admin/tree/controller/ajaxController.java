@@ -25,7 +25,7 @@ public class ajaxController{
 	@Autowired
 	TreetService treeService;
 	
-	@RequestMapping(value = "/listJson.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/treeList.do", method = RequestMethod.GET)
 	@ResponseBody
 	public Object getJson(HttpServletRequest request,Model model) {
 		List<Map<String, Object>> resultMap = (List<Map<String, Object>>) treeService.getList(request);
