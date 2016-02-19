@@ -2,7 +2,9 @@
  <script src="/js/ngGrid-core.js"></script>
  <script src="/js/jquery-1.10.2.min.js"></script>
  <script src="/js/dist/jstree.min.js"></script>
+ <script src="/js/jquery-ui.min.js"></script>
  <script src="/js/jquery.cookie.js"></script>
+ <script src="/js/hashMaps.js"></script>
  <link rel="stylesheet" href="/js/dist/themes/default/style.min.css" />
 <script>
 	grid.init({
@@ -11,12 +13,18 @@
 		method : "POST"
 	});
 </script>
+<style>
+  label {
+    display: inline-block;
+    width: 5em;
+  }
+  </style>
  <div>
 	<h1>TREE <span id="mode"></span></h1>
 	<div>추가, 삭제, 이름변경, 드래그</div>
 	<div class="col-md-4 col-sm-8 col-xs-8">
 	
-		<button type="button" class="btn btn-success btn-sm" onclick="chane_manager();"><i class="glyphicon glyphicon-asterisk"></i>관리자/사용자 모드 변경</button>
+		<button type="button" class="btn btn-info btn-sm" onclick="chane_manager();"><i class="glyphicon glyphicon-asterisk"></i>관리자/사용자 모드 변경</button>
 	
 		<button type="button" class="btn btn-success btn-sm" onclick="demo_create_root();"><i class="glyphicon glyphicon-asterisk"></i>Root 만들기</button>
 		<button type="button" class="btn btn-danger btn-sm" onclick="demo_check_delete();"><i class="glyphicon glyphicon-remove"></i>선택 삭제</button>
@@ -27,6 +35,11 @@
 		<div>Search</div>
 		<div>
 			<input type="text" id="treeSearchWord">
+		</div>
+		
+		<div>선택된 node의 URL</div>
+		<div>
+			<input type="text" id="selectNodeUrl">
 		</div>
 	</div> 
 	
@@ -51,7 +64,7 @@
 	});
 	
 	var tree =  $('#jstree_demo').jstree(true);
-	
+	var addressLinkMap = new HashMap();
 	var drawTree = function(){
 		if($.cookie('mode') == "user"){
 			$('#jstree_demo').jstree({
@@ -73,8 +86,6 @@
 				"plugins" : ["search"],
 				"contextmenu": {items: context_menu}
 			}).on('changed.jstree', function(e,data) { 
-		        //alert(1);
-		        console.log(data);
 		        if(data.event != undefined){
 		        	 window.open(data.node.original.href);
 		        }
@@ -92,6 +103,8 @@
 						},
 						//'url' :'/ajax/listJson.do',
 						'data' : function (node) {
+							console.log(node.id);
+							
 							return { 'id' : node.id };
 						}
 					}
@@ -104,6 +117,13 @@
 		    	treeControl("renameC",data);
 		    }).bind("dblclick.jstree", function (e, data) {
 		    	demo_rename($(e.target).closest("li").attr("id"));
+		    }).mouseover(function(e, data) { 
+		      
+		    }).on('changed.jstree', function(e,data) { 
+		    	if(data.event != undefined){
+		    		//$("#"+$(e.target).closest("li").attr("id")).attr("title",tree.get_selected($(e.target).closest("li").attr("id"))[0].original.href) 
+		    		$("#selectNodeUrl").val(data.node.original.href);
+		        }
 		    });
 		}
 		

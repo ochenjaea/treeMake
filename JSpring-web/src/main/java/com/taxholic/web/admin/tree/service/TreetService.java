@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -35,20 +36,42 @@ public class TreetService{
 		Map<String,Object> paramMap = new HashMap<String,Object>();
 		
 		paramMap.put("parent_id", request.getParameter("node").toString().replace("tree_", ""));
-		Object list = treeData((List<Map<String, Object>>) this.dao.getList("tree.getTree",paramMap));
+		Object list = treeData((List<Map<String, Object>>) this.dao.getList("tree.getTree",paramMap), request);
 		return list;
 		
 	}
 	
-	private Object treeData(List<Map<String, Object>> list){
+	private Object treeData(List<Map<String, Object>> list, HttpServletRequest request){
 		
 		List<Object> returnList = new ArrayList<Object>();
+		
+		Cookie[] cookies = request.getCookies();
+		
+		String checkMode = "";
+		
+		if (cookies != null) {
+			for (int i = 0; i < cookies.length; i++) {
+				if (cookies[i].getName().equals("mode")) {
+					checkMode = cookies[i].getValue();
+					break;
+				}
+			}
+		}
+		
 		
 		for(int i=0;i<list.size();i++){
 			Map<String,Object> treeMap = new HashMap<String, Object>();
 			treeMap.put("id","tree_"+list.get(i).get("SEQ"));
-			treeMap.put("text",list.get(i).get("GROUP_NAME"));
-			treeMap.put("href","http://www.naver.com");
+			
+			if(checkMode.equals("admin")){
+				treeMap.put("text",list.get(i).get("GROUP_NAME"));
+				treeMap.put("href",list.get(i).get("URL"));
+			}else{
+				treeMap.put("text",list.get(i).get("GROUP_NAME"));
+				treeMap.put("href",list.get(i).get("URL"));
+			}
+			
+			
 			treeMap.put("children",checkChildren((int) list.get(i).get("SEQ")));
 			returnList.add(treeMap);
 		}

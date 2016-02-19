@@ -9,6 +9,7 @@
 			SEQ
 			,SEQ
 			,GROUP_NAME
+			,URL
 			,PARENT_SEQ
 		FROM 
 			TB_GROUP
