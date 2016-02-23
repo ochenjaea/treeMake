@@ -26,8 +26,8 @@
 	
 		<button type="button" class="btn btn-info btn-sm" onclick="chane_manager();"><i class="glyphicon glyphicon-asterisk"></i>관리자/사용자 모드 변경</button>
 	
-		<button type="button" class="btn btn-success btn-sm" onclick="demo_create_root();"><i class="glyphicon glyphicon-asterisk"></i>Root 만들기</button>
-		<button type="button" class="btn btn-danger btn-sm" onclick="demo_check_delete();"><i class="glyphicon glyphicon-remove"></i>선택 삭제</button>
+		<button type="button" class="btn btn-success btn-sm" onclick="demo_create_root();" id="root_make"><i class="glyphicon glyphicon-asterisk"></i>Root 만들기</button>
+		<button type="button" class="btn btn-danger btn-sm" onclick="demo_check_delete();" id="check_delete"><i class="glyphicon glyphicon-remove"></i>선택 삭제</button>
 						<!-- <button type="button" class="btn btn-success btn-sm" onclick="demo_create();"><i class="glyphicon glyphicon-asterisk"></i> Create</button>
 						<button type="button" class="btn btn-warning btn-sm" onclick="demo_rename();"><i class="glyphicon glyphicon-pencil"></i> Rename</button>
 						<button type="button" class="btn btn-danger btn-sm" onclick="demo_delete();"><i class="glyphicon glyphicon-remove"></i> Delete</button>--> 
@@ -58,17 +58,24 @@
 			$.cookie('mode', 'user', { expires: 7, path: '/', secure: false });
 			$("#mode").html("사용자 모드");
 			$("#showUrl").hide();
+			$("#root_make").hide();
+			$("#check_delete").hide();
 		}else{
 			$.cookie('mode', 'admin', { expires: 7, path: '/', secure: false });
 			$("#mode").html("관리자 모드");
 			$("#showUrl").show();
+			$("#root_make").show();
+			$("#check_delete").show();
 		}
 		drawTree();
 	});
 	
 	var tree =  $('#jstree_demo').jstree(true);
 	var selectedNode = "";
-	
+	var copyncut = "";
+	var copyncutNode = "";
+	var coptncutParentNode = "";
+	var copyncutPnode = "";
 	var drawTree = function(){
 		if($.cookie('mode') == "user"){
 			$('#jstree_demo').jstree({
@@ -119,6 +126,10 @@
 		    	treeControl("renameC",data);
 		    }).bind("dblclick.jstree", function (e, data) {
 		    	demo_rename($(e.target).closest("li").attr("id"));
+		    }).bind("cut.jstree", function (e, data) {
+		    	console.log(1);
+		    }).bind("paste.jstree", function (e, data) {
+		    	console.log(2);
 		    }).mouseover(function(e, data) { 
 		      
 		    }).on('changed.jstree', function(e,data) { 
@@ -169,6 +180,48 @@
                 "action": function (obj,data) {
                   	demo_delete(obj.reference.attr("id"));
                 }
+            },
+            "Etc": {
+                "separator_before": false,
+                "separator_after": false,
+                "label": "Etc",
+                "submenu" :  {
+                	 "Copy": {
+                         "separator_before": false,
+                         "separator_after": false,
+                         "label": "Copy",
+                         "action": function (obj,data) {
+                        	 console.log(data);
+                        	 copyncut = "copy";
+                           	//demo_delete(obj.reference.attr("id"));
+                         }
+                     },
+                     "Paste": {
+                         "separator_before": false,
+                         "separator_after": false,
+                         "label": "Paste",
+                         "action": function (obj,data) {
+                       		coptncutParentNode = obj.reference.attr("id");
+            				
+                       		if(coptncutParentNode == copyncutNode){
+                       			return;
+                       		}
+                       		
+                       		treeControl(copyncut,obj.reference.attr("id"));
+                         }
+                     },
+                     "Cut": {
+                         "separator_before": false,
+                         "separator_after": false,
+                         "label": "Cut",
+                         "action": function (obj,data) {
+							copyncut = "cut";
+                        	copyncutNode = obj.reference.attr("id");
+                        	copyncutPnode = $("#"+copyncutNode.replace("_anchor","")).parent().parent().attr("id")
+                         }
+                     },
+                    
+                }
             }
         };
 	    return items;
@@ -180,10 +233,14 @@
 			$.cookie('mode', 'admin', { expires: 7, path: '/', secure: false });
 			$("#mode").html("관리자 모드");
 			$("#showUrl").show();
+			$("#root_make").show();
+			$("#check_delete").show();
 		}else{
 			$.cookie('mode', 'user', { expires: 7, path: '/', secure: false });
 			$("#mode").html("사용자 모드");
 			$("#showUrl").hide();
+			$("#root_make").hide();
+			$("#check_delete").hide();
 		}
 		
 		drawTree();
@@ -249,6 +306,11 @@
 		}else if(flag == "urlChange"){
 			param["data"] = selectedNode;
 			param["url"] = $("#selectNodeUrl").val();
+		}else if(flag == "cut"){
+			//param["data"] = data.replace("_anchor","");;
+			
+			param["parent_id"] = data.replace("_anchor","");
+			param["old_parent"] = copyncutNode.replace("_anchor","");
 		}else{
 			param["data"] = data;
 		}
@@ -265,25 +327,45 @@
 			contentType: 'application/x-www-form-urlencoded; charset=utf-8',
 			dataType : "json",
 			success : function(data) {
-				var ref = $('#jstree_demo').jstree(true);
-				if(data.type == "create"){
-					tmpSel = tree.create_node(data.parent_id, {"type":"file"});
-					
-					ref.open_node(data.parent_id);
-					ref.refresh_node(data.parent_id);
-					setTimeout(function(){
-						demo_rename("tree_"+data.seq);
-					},500);
-				}else if(data.type == "urlChange"){
-					
-				
-					setTimeout(function(){
-						ref.refresh_node($("#"+selectedNode).parent().parent("li").attr("id"));
+				if(data.result == "ok"){
+					var ref = $('#jstree_demo').jstree(true);
+					if(data.type == "create"){
+						tmpSel = tree.create_node(data.parent_id, {"type":"file"});
+						
+						ref.open_node(data.parent_id);
+						ref.refresh_node(data.parent_id);
 						setTimeout(function(){
-							$("#jstree_demo").jstree("select_node",selectedNode);
+							demo_rename("tree_"+data.seq);
 						},500);
-					},500);
+					}else if(data.type == "urlChange"){
+						
+					
+						setTimeout(function(){
+							ref.refresh_node($("#"+selectedNode).parent().parent("li").attr("id"));
+							setTimeout(function(){
+								$("#jstree_demo").jstree("select_node",selectedNode);
+							},500);
+						},500);
+					}else if(data.type == "cut"){
+						setTimeout(function(){
+							ref.refresh_node($("#"+coptncutParentNode.replace("_anchor","")).attr("id"));
+							
+							ref.refresh_node(copyncutPnode);
+							
+							copyncut = "";
+							copyncutNode = "";
+							coptncutParentNode = "";
+							copyncutPnode = "";
+							
+						},500);
+					}
+				}else{
+					if(data.type == "cut"){
+						alert("now node is parent");
+					}
 				}
+				
+				
 			},
 			error : function(e) {
 				console.log(e);

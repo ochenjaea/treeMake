@@ -24,7 +24,7 @@ public class TreetService{
 	
 	public Map<String, Integer> dataMap = new HashMap<String, Integer>();
 	
-	public Map<Object,Object> seqMap = new HashMap<Object, Object>();
+	public Map<String, Object> seqMap = new HashMap<String, Object>();
 	
 	public TreetService(){
 		dataMap.put("create", 0);
@@ -32,6 +32,8 @@ public class TreetService{
 		dataMap.put("renameC", 2);
 		dataMap.put("move", 3);
 		dataMap.put("urlChange", 4);
+		dataMap.put("copy", 5);
+		dataMap.put("cut", 6);
 	}	
 	
 	public Object getList(HttpServletRequest request){
@@ -128,6 +130,21 @@ public class TreetService{
 			resultMap.put("type", "urlChange");
 			resultMap.put("result", "ok");
 			break;
+		case 5:
+			//updateUrlTree(request);
+			resultMap.put("type", "copy");
+			resultMap.put("result", "ok");
+			break;
+		case 6:
+			boolean state = updateCutTree(request);
+			if(state){
+				resultMap.put("result", "ok");
+			}else{
+				resultMap.put("result", "nok");
+			}
+			resultMap.put("type", "cut");
+			
+			break;
 		default:
 			System.out.println("exception");
 			resultMap.put("result", "nok");
@@ -175,7 +192,7 @@ public class TreetService{
 	 */
 	private boolean removeTree(HttpServletRequest request){
 		List<Object> removeKeys = new ArrayList<Object>();
-		seqMap = new HashMap<Object, Object>();
+		seqMap = new HashMap<String, Object>();
 		
 		
 		String[] values = request.getParameterValues("data[]");
@@ -205,7 +222,7 @@ public class TreetService{
 		for(int i=0;i<resultListMap.size();i++){
 			resultListMap.get(i).get("SEQ");
 			
-			seqMap.put(resultListMap.get(i).get("SEQ"),resultListMap.get(i).get("SEQ"));
+			seqMap.put(resultListMap.get(i).get("SEQ").toString(),resultListMap.get(i).get("SEQ"));
 			
 			childTreeNode(resultListMap.get(i).get("SEQ"));
 		}
@@ -248,5 +265,42 @@ public class TreetService{
 		this.dao.update("tree.updateTreeNodeUrl", paramMap);
 		return true;
 	}
+	
+	private boolean updateCopyTree(HttpServletRequest request){
+		
+		Map<String,Object> paramMap = new HashMap<String,Object>();
+		paramMap.put("seq", request.getParameter("data").toString().replace("tree_", ""));
+		paramMap.put("url", request.getParameter("url").toString());
+		
+		this.dao.update("tree.updateTreeNodeUrl", paramMap);
+		return true;
+	}
+	
+	private boolean updateCutTree(HttpServletRequest request){
+		seqMap = new HashMap<String, Object>();
+		Map<String,Object> paramMap = new HashMap<String,Object>();
+		paramMap.put("seq", request.getParameter("old_parent").toString().replace("tree_", ""));
+		paramMap.put("new_parent", request.getParameter("parent_id").toString().replace("tree_", ""));
+		childTreeNode(request.getParameter("old_parent").toString().replace("tree_", ""));
+		
+		String checkKey = request.getParameter("parent_id").toString().replace("tree_", "").toString();
+		
+		Object check = seqMap.get(checkKey);
+		if(check == null || check  == ""){
+			this.dao.update("tree.updateTreeNodePosition", paramMap);
+			return true;
+		}else{
+			return false;
+		}
+		//paramMap.put("old_parent", request.getParameter("old_parent").toString().replace("tree_", ""));
+	//	paramMap.put("url", request.getParameter("url").toString());
+		
+		///TODO CHECK 
+		///부모가 하위로 하려고 할때
+		///같은곳에서 붙여놓기 
+		//this.dao.update("tree.updateTreeNodePosition", paramMap);;
+		//return true;
+	}
+	
 
 }

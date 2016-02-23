@@ -68,7 +68,10 @@
 			PARENT_SEQ = #{new_parent}
 		WHERE
 			SEQ = #{seq}
-			AND PARENT_SEQ = #{old_parent}
+			
+			<if test="old_parent != null">
+			    AND PARENT_SEQ = #{old_parent}
+			</if>
 	</update>
 	
 	<update id="updateTreeNodeUrl" parameterType="java.util.HashMap">
@@ -77,4 +80,13 @@
 		WHERE
 			SEQ = #{seq}
 	</update>
+	
+	<select id="checkChildrenNode" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT 
+			SEQ 
+		FROM 
+			TB_GROUP 
+		WHERE 
+			PARENT_SEQ = #{}
+	</select>
 </mapper> 
