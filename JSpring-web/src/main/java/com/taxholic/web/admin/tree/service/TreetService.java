@@ -105,6 +105,9 @@ public class TreetService{
 		switch(status){
 		case 0:
 			int resultSeq = addTree(request);
+			if(request.getParameter("data").equals("tree_0")){
+				resultMap.put("root_make", true);
+			}
 			resultMap.put("parent_id", request.getParameter("data"));
 			resultMap.put("seq", resultSeq);
 			resultMap.put("type", "create");

@@ -330,13 +330,19 @@
 				if(data.result == "ok"){
 					var ref = $('#jstree_demo').jstree(true);
 					if(data.type == "create"){
-						tmpSel = tree.create_node(data.parent_id, {"type":"file"});
 						
-						ref.open_node(data.parent_id);
-						ref.refresh_node(data.parent_id);
-						setTimeout(function(){
-							demo_rename("tree_"+data.seq);
-						},500);
+						if(data.root_make == true){
+							ref.refresh(true);
+						}else{
+							tmpSel = tree.create_node(data.parent_id, {"type":"file"});
+							
+							ref.open_node(data.parent_id);
+							ref.refresh_node(data.parent_id);
+							setTimeout(function(){
+								demo_rename("tree_"+data.seq);
+							},500);
+						}
+						
 					}else if(data.type == "urlChange"){
 						
 					
