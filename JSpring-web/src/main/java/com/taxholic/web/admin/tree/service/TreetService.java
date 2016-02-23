@@ -1,6 +1,7 @@
 package com.taxholic.web.admin.tree.service;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class TreetService{
 		dataMap.put("remove", 1);
 		dataMap.put("renameC", 2);
 		dataMap.put("move", 3);
+		dataMap.put("urlChange", 4);
 	}	
 	
 	public Object getList(HttpServletRequest request){
@@ -40,6 +42,8 @@ public class TreetService{
 		return list;
 		
 	}
+	
+	
 	
 	private Object treeData(List<Map<String, Object>> list, HttpServletRequest request){
 		
@@ -67,7 +71,7 @@ public class TreetService{
 				treeMap.put("text",list.get(i).get("GROUP_NAME"));
 				treeMap.put("href",list.get(i).get("URL"));
 			}else{
-				treeMap.put("text",list.get(i).get("GROUP_NAME"));
+				treeMap.put("text",list.get(i).get("GROUP_NAME")+"("+list.get(i).get("URL")+")");
 				treeMap.put("href",list.get(i).get("URL"));
 			}
 			
@@ -119,6 +123,11 @@ public class TreetService{
 			resultMap.put("type", "updatePosition");
 			resultMap.put("result", "ok");
 			break;
+		case 4:
+			updateUrlTree(request);
+			resultMap.put("type", "urlChange");
+			resultMap.put("result", "ok");
+			break;
 		default:
 			System.out.println("exception");
 			resultMap.put("result", "nok");
@@ -168,17 +177,22 @@ public class TreetService{
 		List<Object> removeKeys = new ArrayList<Object>();
 		seqMap = new HashMap<Object, Object>();
 		
-		seqMap.put(request.getParameter("data").toString().replace("tree_", ""), request.getParameter("data").toString().replace("tree_", ""));
 		
-		//삭제할 노드의 자식 노드들 검사
-		childTreeNode( request.getParameter("data").toString().replace("tree_", ""));
-		//삭제할 노드를 파라미터 저장
-		for( Object key : seqMap.keySet() ){
-			removeKeys.add(seqMap.get(key));
-        }
+		String[] values = request.getParameterValues("data[]");
 		
-		//paramMap.put
-		this.dao.delete("tree.removeTreeNode", removeKeys);
+		for(int i=0;i<values.length;i++){
+			seqMap.put(values[i].toString().replace("tree_", ""), values[i].toString().replace("tree_", ""));
+			
+			//삭제할 노드의 자식 노드들 검사
+			childTreeNode(values[i].toString().replace("tree_", ""));
+			//삭제할 노드를 파라미터 저장
+			for( Object key : seqMap.keySet() ){
+				removeKeys.add(seqMap.get(key));
+	        }
+			
+			//paramMap.put
+			this.dao.delete("tree.removeTreeNode", removeKeys);
+		}
 		
 		return true;
 	}
@@ -222,6 +236,16 @@ public class TreetService{
 		
 		this.dao.update("tree.updateTreeNodePosition", paramMap);
 		
+		return true;
+	}
+	
+	private boolean updateUrlTree(HttpServletRequest request){
+		
+		Map<String,Object> paramMap = new HashMap<String,Object>();
+		paramMap.put("seq", request.getParameter("data").toString().replace("tree_", ""));
+		paramMap.put("url", request.getParameter("url").toString());
+		
+		this.dao.update("tree.updateTreeNodeUrl", paramMap);
 		return true;
 	}
 

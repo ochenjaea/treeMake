@@ -41,7 +41,7 @@
 			<div>선택된 node의 URL</div>
 			<div>
 				<input type="text" id="selectNodeUrl">
-				<input type="button" value="변경" onclick="demo_changeUrl()">
+				<input type="button" value="변경" onclick="demo_changeUrl(this)">
 			</div>
 		</div>
 	</div> 
@@ -107,8 +107,6 @@
 						},
 						//'url' :'/ajax/listJson.do',
 						'data' : function (node) {
-							console.log(node.id);
-							
 							return { 'id' : node.id };
 						}
 					}
@@ -147,7 +145,6 @@
 	  });
 	
 	function context_menu(node){
-	 	//tree = $('#jstree_demo').jstree(true);
         return {
             "Create": {
                 "separator_before": false,
@@ -162,7 +159,6 @@
                 "separator_after": false,
                 "label": "Rename",
                 "action": function (obj) { 
-                	//treeControl('rename');
                 	demo_rename(obj.reference.attr("id"));
                 }
             },                         
@@ -171,8 +167,6 @@
                 "separator_after": false,
                 "label": "Remove",
                 "action": function (obj,data) {
-                    //tree.delete_node(obj.reference.attr("id"));
-                  	//treeControl('remove');
                   	demo_delete(obj.reference.attr("id"));
                 }
             }
@@ -214,22 +208,29 @@
 		var sel = id.replace("_anchor","");
 		
 		tree.delete_node(sel);
-		treeControl('remove',sel);
+		var delKeys = [];
+		delKeys[0] = sel;
+		
+		treeControl('remove',delKeys);
 	};
 	
 	var demo_changeUrl = function(){
-		
+		treeControl('urlChange');
 	}
 	
-	
 	var demo_check_delete = function(){
-		var sel = tree.get_selected();
-		console.log(sel);
+		
+		var msg = confirm("if children all checked that you may parents node delete.");
+		if (msg == true) {
+			var sel = tree.get_selected();
+			tree.delete_node(sel);
+			treeControl('remove',sel);
+		}
 	}
 	
 	var treeControl = function(flag,data){
 		var param = {
-				type : flag
+			type : flag
 		};
 		
 		if(flag=='rename'){
@@ -244,11 +245,15 @@
 				param["parent_id"] = data.parent;
 				param["old_parent"] = data.old_parent;
 			}
-			jsonCommon(flag,param);
+			
+		}else if(flag == "urlChange"){
+			param["data"] = selectedNode;
+			param["url"] = $("#selectNodeUrl").val();
 		}else{
 			param["data"] = data;
-			jsonCommon(flag,param);
 		}
+		
+		jsonCommon(flag,param);
 	};
 	
 	var tmpSel = "";
@@ -260,18 +265,25 @@
 			contentType: 'application/x-www-form-urlencoded; charset=utf-8',
 			dataType : "json",
 			success : function(data) {
+				var ref = $('#jstree_demo').jstree(true);
 				if(data.type == "create"){
 					tmpSel = tree.create_node(data.parent_id, {"type":"file"});
 					
-					var ref = $('#jstree_demo').jstree(true);
 					ref.open_node(data.parent_id);
-					$.jstree.reference('#jstree_demo').refresh();
-					//$('#jstree_demo').jstree(true).redraw(true);
+					ref.refresh_node(data.parent_id);
 					setTimeout(function(){
 						demo_rename("tree_"+data.seq);
 					},500);
+				}else if(data.type == "urlChange"){
+					
+				
+					setTimeout(function(){
+						ref.refresh_node($("#"+selectedNode).parent().parent("li").attr("id"));
+						setTimeout(function(){
+							$("#jstree_demo").jstree("select_node",selectedNode);
+						},500);
+					},500);
 				}
-			//	$.jstree.reference('#jstree_demo').refresh();
 			},
 			error : function(e) {
 				console.log(e);

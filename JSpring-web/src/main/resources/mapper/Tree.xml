@@ -63,12 +63,18 @@
 			AND GROUP_NAME = #{old_text}
 	</update>
 
-
 	<update id="updateTreeNodePosition" parameterType="java.util.HashMap">
 		UPDATE TB_GROUP SET
 			PARENT_SEQ = #{new_parent}
 		WHERE
 			SEQ = #{seq}
 			AND PARENT_SEQ = #{old_parent}
+	</update>
+	
+	<update id="updateTreeNodeUrl" parameterType="java.util.HashMap">
+		UPDATE TB_GROUP SET
+			URL = #{url}
+		WHERE
+			SEQ = #{seq}
 	</update>
 </mapper> 
