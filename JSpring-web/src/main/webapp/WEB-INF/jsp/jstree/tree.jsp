@@ -74,7 +74,7 @@
 	var selectedNode = "";
 	var copyncut = "";
 	var copyncutNode = "";
-	var coptncutParentNode = "";
+	var copyncutParentNode = "";
 	var copyncutPnode = "";
 	var drawTree = function(){
 		if($.cookie('mode') == "user"){
@@ -193,6 +193,7 @@
                          "action": function (obj,data) {
                         	 console.log(data);
                         	 copyncut = "copy";
+                        	 copyncutNode = obj.reference.attr("id");
                            	//demo_delete(obj.reference.attr("id"));
                          }
                      },
@@ -201,9 +202,9 @@
                          "separator_after": false,
                          "label": "Paste",
                          "action": function (obj,data) {
-                       		coptncutParentNode = obj.reference.attr("id");
+                       		copyncutParentNode = obj.reference.attr("id");
             				
-                       		if(coptncutParentNode == copyncutNode){
+                       		if(copyncutParentNode == copyncutNode){
                        			return;
                        		}
                        		
@@ -217,7 +218,7 @@
                          "action": function (obj,data) {
 							copyncut = "cut";
                         	copyncutNode = obj.reference.attr("id");
-                        	copyncutPnode = $("#"+copyncutNode.replace("_anchor","")).parent().parent().attr("id")
+                        	copyncutPnode = $("#"+copyncutNode.replace("_anchor","")).parent().parent().attr("id");
                          }
                      },
                     
@@ -306,6 +307,11 @@
 		}else if(flag == "urlChange"){
 			param["data"] = selectedNode;
 			param["url"] = $("#selectNodeUrl").val();
+		}else if(flag == "copy"){
+			//param["data"] = data.replace("_anchor","");;
+			
+			param["new_parent"] = data.replace("_anchor","");
+			param["copy_seq"] = copyncutNode.replace("_anchor","");
 		}else if(flag == "cut"){
 			//param["data"] = data.replace("_anchor","");;
 			
@@ -354,13 +360,25 @@
 						},500);
 					}else if(data.type == "cut"){
 						setTimeout(function(){
-							ref.refresh_node($("#"+coptncutParentNode.replace("_anchor","")).attr("id"));
+							ref.refresh_node($("#"+copyncutParentNode.replace("_anchor","")).attr("id"));
 							
 							ref.refresh_node(copyncutPnode);
 							
 							copyncut = "";
 							copyncutNode = "";
-							coptncutParentNode = "";
+							copyncutParentNode = "";
+							copyncutPnode = "";
+							
+						},500);
+					}else if(data.type == "copy"){
+						setTimeout(function(){
+							ref.refresh_node($("#"+copyncutParentNode.replace("_anchor","")).attr("id"));
+							
+							ref.refresh_node(copyncutPnode);
+							
+							copyncut = "";
+							copyncutNode = "";
+							copyncutParentNode = "";
 							copyncutPnode = "";
 							
 						},500);
@@ -370,8 +388,6 @@
 						alert("now node is parent");
 					}
 				}
-				
-				
 			},
 			error : function(e) {
 				console.log(e);

@@ -83,10 +83,32 @@
 	
 	<select id="checkChildrenNode" parameterType="java.util.HashMap" resultType="java.util.HashMap">
 		SELECT 
-			SEQ 
+			SEQ
+			,GROUP_NAME
+			,URL
 		FROM 
 			TB_GROUP 
 		WHERE 
-			PARENT_SEQ = #{}
+			PARENT_SEQ = #{seq}
 	</select>
+	
+	<insert id="copyNode">
+		INSERT INTO  TB_GROUP
+		(
+			GROUP_NAME
+			,URL
+			,PARENT_SEQ
+		) 
+		SELECT 
+			GROUP_NAME
+			,URL
+			,#{new_parent} 
+		FROM 
+			TB_GROUP 
+		WHERE 
+			SEQ = #{copy_seq}
+		<selectKey keyProperty="seq" resultType="long" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
 </mapper> 

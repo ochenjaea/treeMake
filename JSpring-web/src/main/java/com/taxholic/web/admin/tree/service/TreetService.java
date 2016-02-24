@@ -107,6 +107,8 @@ public class TreetService{
 			int resultSeq = addTree(request);
 			if(request.getParameter("data").equals("tree_0")){
 				resultMap.put("root_make", true);
+			}else{
+				resultMap.put("root_make", false);
 			}
 			resultMap.put("parent_id", request.getParameter("data"));
 			resultMap.put("seq", resultSeq);
@@ -134,7 +136,7 @@ public class TreetService{
 			resultMap.put("result", "ok");
 			break;
 		case 5:
-			//updateUrlTree(request);
+			updateCopyTree(request);
 			resultMap.put("type", "copy");
 			resultMap.put("result", "ok");
 			break;
@@ -272,11 +274,35 @@ public class TreetService{
 	private boolean updateCopyTree(HttpServletRequest request){
 		
 		Map<String,Object> paramMap = new HashMap<String,Object>();
-		paramMap.put("seq", request.getParameter("data").toString().replace("tree_", ""));
-		paramMap.put("url", request.getParameter("url").toString());
+		paramMap.put("copy_seq", request.getParameter("copy_seq").toString().replace("tree_", ""));
+		paramMap.put("new_parent", request.getParameter("new_parent").toString().replace("tree_", ""));
 		
-		this.dao.update("tree.updateTreeNodeUrl", paramMap);
+		seqMap = new HashMap<String, Object>();
+		childTreeNode(request.getParameter("copy_seq").toString().replace("tree_", ""));
+	//	seqMap.remove("");
+		this.dao.insert("tree.copyNode", paramMap);
+		
+		
+		updateCopyChildTree(paramMap.get("seq"),request.getParameter("copy_seq").toString().replace("tree_", ""));
 		return true;
+	}
+	
+	private void updateCopyChildTree(Object new_parent,Object copy_seq){
+		Map<String,Object> paramMap = new HashMap<String,Object>();
+		//paramMap.put("new_parent",new_parent);
+		paramMap.put("seq",copy_seq);
+		List<Map<String, Object>> resultListMap = (List<Map<String, Object>>) this.dao.getList("tree.checkChildrenNode",paramMap);
+		//System.out.println(resultListMap);
+		
+		for(int i=0;i<resultListMap.size();i++){
+			resultListMap.get(i).get("seq");
+			paramMap.put("copy_seq", resultListMap.get(i).get("SEQ"));
+			paramMap.put("new_parent",  new_parent);
+			
+			this.dao.insert("tree.copyNode", paramMap);
+			
+			updateCopyChildTree(paramMap.get("seq"),resultListMap.get(i).get("SEQ"));
+		}
 	}
 	
 	private boolean updateCutTree(HttpServletRequest request){
