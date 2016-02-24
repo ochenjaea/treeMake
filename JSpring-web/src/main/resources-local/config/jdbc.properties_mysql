@@ -1,0 +1,25 @@
+jdbc.minimumIdle = 2
+jdbc.maximumPoolSize = 4
+jdbc.validationQuery = SELECT 1
+jdbc.connectionTimeout = 100000
+jdbc.autocommit = false
+
+
+#Server Setting -Dlog4jdbc.drivers=org.sqlite.JDBC
+#datasource.driverClassName = org.sqlite.JDBC
+#datasource.driverClassName = net.sf.log4jdbc.DriverSpy
+datasource.driverClassName = com.mysql.jdbc.Driver
+#datasource.url =  jdbc:log4jdbc:sqlite:
+datasource.url =  jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf8
+
+
+#datasource.url = ENC(K8pTTZi2vs7b7PMkjAAVSeiCBzKqwzThWv4CM5SB7Hr+4zIU+CAiGpWr/Wz5MvTM)
+datasource.cachePrepStmts = true
+datasource.prepStmtCacheSize = 250
+datasource.prepStmtCacheSqlLimit = 2048
+datasource.useServerPrepStmts = true
+
+datasource.user = ENC(UA+qoDtNJCcp33a7yF5BEA==)
+datasource.password = ENC(q+M6hwfwzxWA/yZuALcdrw==)
+
+server = local

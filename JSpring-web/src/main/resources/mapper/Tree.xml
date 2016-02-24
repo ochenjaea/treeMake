@@ -7,7 +7,6 @@
 	<select id="getTree" parameterType="java.util.HashMap" resultType="java.util.HashMap">
 		SELECT
 			SEQ
-			,SEQ
 			,GROUP_NAME
 			,URL
 			,PARENT_SEQ

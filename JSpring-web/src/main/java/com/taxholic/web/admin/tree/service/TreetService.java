@@ -169,7 +169,7 @@ public class TreetService{
 		Map<String,Object> paramMap = new HashMap<String,Object>();
 		paramMap.put("parent_id", request.getParameter("data").toString().replace("tree_", ""));
 		
-		this.dao.insert("tree.insertTreeNode", paramMap);
+		int t= this.dao.insert("tree.insertTreeNode", paramMap);
 		return Integer.parseInt(paramMap.get("seq").toString());
 		
 	}

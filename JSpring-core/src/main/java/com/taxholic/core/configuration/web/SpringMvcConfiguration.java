@@ -59,7 +59,6 @@ public class SpringMvcConfiguration extends WebMvcConfigurerAdapter {
         resolver.setViewClass(JstlView.class);
         resolver.setPrefix("/WEB-INF/jsp/");
         resolver.setSuffix(".jsp");
-        resolver.setOrder(2);
         return resolver;
     }
    

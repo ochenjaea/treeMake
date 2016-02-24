@@ -2,8 +2,9 @@ package com.taxholic.web.test.controller;
 
 
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.taxholic.core.authority.AuthDto;
+import com.taxholic.core.authority.AuthUtil;
 import com.taxholic.web.test.dto.EncryptDto;
 import com.taxholic.web.test.service.TestService;
 
@@ -56,6 +58,9 @@ public class TestController{
 
 	@RequestMapping(value = "/getJson.do", method = RequestMethod.GET)
 	public String getJson(AuthDto authDto, Model model) {
+		
+		AuthUtil auth = new AuthUtil();
+		List<Object> t = auth.getUser().getRoleList();
 		
 		model.addAttribute("auth",new AuthDto());
 	 

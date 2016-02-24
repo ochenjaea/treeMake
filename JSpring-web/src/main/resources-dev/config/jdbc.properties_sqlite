@@ -6,10 +6,10 @@ jdbc.autocommit = false
 
 
 #Server Setting -Dlog4jdbc.drivers=org.sqlite.JDBC
-#datasource.driverClassName = org.sqlite.JDBC
-datasource.driverClassName = net.sf.log4jdbc.DriverSpy
-#datasource.url =  jdbc:sqlite:
-datasource.url = ENC(K8pTTZi2vs7b7PMkjAAVSeiCBzKqwzThWv4CM5SB7Hr+4zIU+CAiGpWr/Wz5MvTM)
+datasource.driverClassName = org.sqlite.JDBC
+#datasource.driverClassName = net.sf.log4jdbc.DriverSpy
+datasource.url =  jdbc:sqlite:
+#datasource.url = ENC(K8pTTZi2vs7b7PMkjAAVSeiCBzKqwzThWv4CM5SB7Hr+4zIU+CAiGpWr/Wz5MvTM)
 datasource.cachePrepStmts = true
 datasource.prepStmtCacheSize = 250
 datasource.prepStmtCacheSqlLimit = 2048
