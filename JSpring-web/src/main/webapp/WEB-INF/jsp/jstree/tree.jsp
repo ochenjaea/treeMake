@@ -51,6 +51,7 @@
 </div>
 
 <script>
+
 	$(document).ready(function() {
 		$.cookie('mode');
 		
@@ -76,6 +77,8 @@
 	var copyncutNode = "";
 	var copyncutParentNode = "";
 	var copyncutPnode = "";
+	
+	//트리 그리기 및 트리에 해당 되는 바인드 이벤트 생성
 	var drawTree = function(){
 		if($.cookie('mode') == "user"){
 			$('#jstree_demo').jstree({
@@ -126,12 +129,6 @@
 		    	treeControl("renameC",data);
 		    }).bind("dblclick.jstree", function (e, data) {
 		    	demo_rename($(e.target).closest("li").attr("id"));
-		    }).bind("cut.jstree", function (e, data) {
-		    	console.log(1);
-		    }).bind("paste.jstree", function (e, data) {
-		    	console.log(2);
-		    }).mouseover(function(e, data) { 
-		      
 		    }).on('changed.jstree', function(e,data) { 
 		    	if(data.event != undefined){
 		    		$("#selectNodeUrl").val(data.node.original.href);
@@ -143,18 +140,20 @@
 		tree =  $('#jstree_demo').jstree(true);
 	};
 	
+	//트리 검색 
 	var to = false;
 	$('#treeSearchWord').keyup(function () {
 		tree.open_all();
-	    if(to) {
-	    	clearTimeout(to); 
-	    }
-	    to = setTimeout(function () {
-			var v = $('#treeSearchWord').val();
+		if(to) {
+			clearTimeout(to); 
+		}
+		to = setTimeout(function () {
+		var v = $('#treeSearchWord').val();
 			$('#jstree_demo').jstree(true).search(v);
 		}, 250);
-	  });
+	});
 	
+	//트리 메뉴 생성
 	function context_menu(node){
         return {
             "Create": {
@@ -194,7 +193,6 @@
                         	 console.log(data);
                         	 copyncut = "copy";
                         	 copyncutNode = obj.reference.attr("id");
-                           	//demo_delete(obj.reference.attr("id"));
                          }
                      },
                      "Paste": {
@@ -202,12 +200,11 @@
                          "separator_after": false,
                          "label": "Paste",
                          "action": function (obj,data) {
+                        	 
                        		copyncutParentNode = obj.reference.attr("id");
-            				
-                       		if(copyncutParentNode == copyncutNode){
+                       		if(copyncutParentNode == copyncutNode && copyncut == "cut"){
                        			return;
                        		}
-                       		
                        		treeControl(copyncut,obj.reference.attr("id"));
                          }
                      },
@@ -221,13 +218,13 @@
                         	copyncutPnode = $("#"+copyncutNode.replace("_anchor","")).parent().parent().attr("id");
                          }
                      },
-                    
                 }
             }
         };
 	    return items;
 	}
 	
+	//모드 변경
 	var chane_manager = function(){
 		$("#jstree_demo").jstree("destroy");
 		if($.cookie('mode') == undefined || $.cookie('mode') == "user"){
@@ -247,21 +244,25 @@
 		drawTree();
 	}
 	
+	//루트 생성
 	var demo_create_root = function(){
 		treeControl('create',"tree_0");
 	};
 	
+	//노드 추가
 	var demo_create = function(id) {
 		var sel = id.replace("_anchor","");
 		
 		treeControl('create',sel);
 	};
 	
+	//노드 이름 변경
 	var demo_rename = function(id) {
 		var sel = id.toString().replace("_anchor","");
 		tree.edit(sel);
 	};
 	
+	//노드 삭제
 	var demo_delete = function(id) {
 		var sel = id.replace("_anchor","");
 		
@@ -272,12 +273,13 @@
 		treeControl('remove',delKeys);
 	};
 	
+	//노드 url 변경
 	var demo_changeUrl = function(){
 		treeControl('urlChange');
 	}
 	
+	//체크박스 선택된 노드 삭제
 	var demo_check_delete = function(){
-		
 		var msg = confirm("if children all checked that you may parents node delete.");
 		if (msg == true) {
 			var sel = tree.get_selected();
@@ -286,13 +288,14 @@
 		}
 	}
 	
+	//트리 컨트롤
 	var treeControl = function(flag,data){
 		var param = {
 			type : flag
 		};
 		
 		if(flag=='rename'){
-			//ref.edit(sel);		
+			
 		}else if(flag=='renameC' || flag=='move'){
 			param["id"] = data.node.id;
 			if(flag=='renameC'){
@@ -308,13 +311,9 @@
 			param["data"] = selectedNode;
 			param["url"] = $("#selectNodeUrl").val();
 		}else if(flag == "copy"){
-			//param["data"] = data.replace("_anchor","");;
-			
 			param["new_parent"] = data.replace("_anchor","");
 			param["copy_seq"] = copyncutNode.replace("_anchor","");
 		}else if(flag == "cut"){
-			//param["data"] = data.replace("_anchor","");;
-			
 			param["parent_id"] = data.replace("_anchor","");
 			param["old_parent"] = copyncutNode.replace("_anchor","");
 		}else{
@@ -324,6 +323,7 @@
 		jsonCommon(flag,param);
 	};
 	
+	//json 통신
 	var tmpSel = "";
 	var jsonCommon = function(flag,param){
 		$.ajax({
@@ -341,51 +341,32 @@
 							ref.refresh(true);
 						}else{
 							tmpSel = tree.create_node(data.parent_id, {"type":"file"});
-							
 							ref.open_node(data.parent_id);
 							ref.refresh_node(data.parent_id);
 							setTimeout(function(){
 								demo_rename("tree_"+data.seq);
 							},500);
 						}
-						
 					}else if(data.type == "urlChange"){
-						
-					
 						setTimeout(function(){
 							ref.refresh_node($("#"+selectedNode).parent().parent("li").attr("id"));
 							setTimeout(function(){
 								$("#jstree_demo").jstree("select_node",selectedNode);
 							},500);
 						},500);
-					}else if(data.type == "cut"){
+					}else if(data.type == "cut" || data.type == "copy"){
 						setTimeout(function(){
 							ref.refresh_node($("#"+copyncutParentNode.replace("_anchor","")).attr("id"));
 							
 							ref.refresh_node(copyncutPnode);
-							
-							copyncut = "";
-							copyncutNode = "";
-							copyncutParentNode = "";
-							copyncutPnode = "";
-							
-						},500);
-					}else if(data.type == "copy"){
-						setTimeout(function(){
-							ref.refresh_node($("#"+copyncutParentNode.replace("_anchor","")).attr("id"));
-							
-							ref.refresh_node(copyncutPnode);
-							
-							copyncut = "";
-							copyncutNode = "";
-							copyncutParentNode = "";
-							copyncutPnode = "";
+							initCopynCut();
 							
 						},500);
 					}
 				}else{
 					if(data.type == "cut"){
 						alert("now node is parent");
+						initCopynCut();
 					}
 				}
 			},
@@ -393,6 +374,14 @@
 				console.log(e);
 			}
 		});
+	};
+	
+	//copy, cut, paste가 끝난후 변수 초기화
+	var initCopynCut = function(){
+		copyncut = "";
+		copyncutNode = "";
+		copyncutParentNode = "";
+		copyncutPnode = "";	
 	};
 
 	</script>
