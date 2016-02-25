@@ -7,7 +7,7 @@
 			<Pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger - %msg%n</Pattern>
 		</layout>
 	</appender>
-	
+	<!-- 
 	<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
          <evaluator>
              <expression>return message.contains("Hikari");</expression>
@@ -15,7 +15,7 @@
          <OnMismatch>NEUTRAL</OnMismatch>
          <OnMatch>DENY</OnMatch>
      </filter>
-	
+	 -->
 	<logger name="org.springframework" level="info" additivity="false" >
 		<appender-ref ref="console" />
 	</logger>
