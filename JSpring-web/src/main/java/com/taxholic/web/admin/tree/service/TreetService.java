@@ -10,17 +10,23 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.taxholic.core.web.dao.CommonDao;
-
+	
 
 @Service
 public class TreetService{
 	
 	@Autowired
 	private CommonDao dao;
+	
+	private static final Logger logger = LoggerFactory.getLogger(TreetService.class);
+	//private static Logger logger;// Logger.getLogger(TreetService.class);
+	
 	
 	public Map<String, Integer> dataMap = new HashMap<String, Integer>();
 	
@@ -34,6 +40,8 @@ public class TreetService{
 		dataMap.put("urlChange", 4);
 		dataMap.put("copy", 5);
 		dataMap.put("cut", 6);
+		
+		logger.debug("TreeService");
 	}	
 	
 	public Object getList(HttpServletRequest request){
@@ -42,10 +50,7 @@ public class TreetService{
 		paramMap.put("parent_id", request.getParameter("node").toString().replace("tree_", ""));
 		Object list = treeData((List<Map<String, Object>>) this.dao.getList("tree.getTree",paramMap), request);
 		return list;
-		
 	}
-	
-	
 	
 	private Object treeData(List<Map<String, Object>> list, HttpServletRequest request){
 		
@@ -63,7 +68,6 @@ public class TreetService{
 				}
 			}
 		}
-		
 		
 		for(int i=0;i<list.size();i++){
 			Map<String,Object> treeMap = new HashMap<String, Object>();
@@ -321,14 +325,6 @@ public class TreetService{
 		}else{
 			return false;
 		}
-		//paramMap.put("old_parent", request.getParameter("old_parent").toString().replace("tree_", ""));
-	//	paramMap.put("url", request.getParameter("url").toString());
-		
-		///TODO CHECK 
-		///부모가 하위로 하려고 할때
-		///같은곳에서 붙여놓기 
-		//this.dao.update("tree.updateTreeNodePosition", paramMap);;
-		//return true;
 	}
 	
 
