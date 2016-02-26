@@ -39,9 +39,19 @@
 		#{email},
 		#{receive},
 		'Y',
-		/*SYSDATE()*/
-		datetime('now','localtime')
+		SYSDATE()
+		/*datetime('now','localtime')*/
 	)
 	</insert>
+	
+	<select id="selectTest" resultType="com.taxholic.web.test.dto.EncryptDto">
+	SELECT 
+		user_id
+		,passwd
+		,user_nm
+		,email
+		,receive
+	FROM auth_member
+	</select>
 
 </mapper> 

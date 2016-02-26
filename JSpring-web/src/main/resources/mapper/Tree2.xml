@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tree2">
+
+	<select id="getTree" resultType="com.taxholic.web.admin.tree.dto.Tree">
+		SELECT
+			SEQ
+			,GROUP_NAME
+			,URL
+			,PARENT_SEQ
+		FROM 
+			TB_GROUP
+		WHERE PARENT_SEQ = #{parentSeq};
+	</select>
+	
+	<select id="checkChildNodeCnt" parameterType="java.util.HashMap" resultType="int">
+		SELECT
+			COUNT(SEQ) AS CNT
+		FROM 
+			TB_GROUP
+		WHERE PARENT_SEQ = #{parentSeq};
+	</select>
+	
+	<select id="checkChildNode" parameterType="java.util.HashMap" resultType="com.taxholic.web.admin.tree.dto.Tree">
+		SELECT
+			SEQ
+		FROM 
+			TB_GROUP
+		WHERE PARENT_SEQ = #{seq};
+	</select>
+	
+	<insert id="insertTreeNode">
+		INSERT INTO TB_GROUP(
+			GROUP_NAME
+			,PARENT_SEQ
+		) VALUES(
+			'new Node'
+			,#{parentSeq}
+		)
+		<selectKey keyProperty="seq" resultType="int" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<delete id="removeTreeNode">
+		DELETE FROM TB_GROUP
+			WHERE
+		SEQ IN
+		<foreach item="item" index="index" collection="list"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	
+	<update id="updateTreeNodeText">
+		UPDATE TB_GROUP SET
+			GROUP_NAME = #{updateName}
+		WHERE
+			SEQ = #{seq}
+			AND GROUP_NAME = #{groupName}
+	</update>
+
+	<update id="updateTreeNodePosition">
+		UPDATE TB_GROUP SET
+			PARENT_SEQ = #{parentSeq}
+		WHERE
+			SEQ = #{seq}
+			
+			<if test="oldParentSeq != null">
+			    AND PARENT_SEQ = #{oldParentSeq}
+			</if>
+	</update>
+	
+	<update id="updateTreeNodeUrl">
+		UPDATE TB_GROUP SET
+			URL = #{url}
+		WHERE
+			SEQ = #{seq}
+	</update>
+	
+	<select id="checkChildrenNode" resultType="com.taxholic.web.admin.tree.dto.Tree">
+		SELECT 
+			SEQ
+			,GROUP_NAME
+			,URL
+		FROM 
+			TB_GROUP 
+		WHERE 
+			PARENT_SEQ = #{seq}
+	</select>
+	
+	<insert id="copyNode">
+		INSERT INTO  TB_GROUP
+		(
+			GROUP_NAME
+			,URL
+			,PARENT_SEQ
+		) 
+		SELECT 
+			GROUP_NAME
+			,URL
+			,#{parentSeq} 
+		FROM 
+			TB_GROUP 
+		WHERE 
+			SEQ = #{seq}
+		<selectKey keyProperty="seq" resultType="int" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+</mapper> 

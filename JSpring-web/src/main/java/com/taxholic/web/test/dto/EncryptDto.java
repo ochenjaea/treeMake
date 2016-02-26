@@ -8,6 +8,7 @@ public class EncryptDto {
 	@Encrypt
 	private String passwd;
 	private String userNm;
+	@Encrypt
 	private String email;
 	private String receive;
 	private String useYn;

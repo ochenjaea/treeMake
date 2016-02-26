@@ -1,10 +1,12 @@
 package com.taxholic.web.test.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.taxholic.core.authority.AuthDto;
 import com.taxholic.core.web.dao.CommonDao;
 import com.taxholic.web.test.dto.EncryptDto;
 
@@ -32,6 +34,12 @@ public class TestService{
 //		String[] aa = null;
 //		System.out.print(aa.length);
 		
+	}
+	 
+	public List<EncryptDto> getList(){
+		return dao.getList("auth.selectTest");
+		
+		//return  dao.getList("auth.selectTest");
 	}
 	
 	

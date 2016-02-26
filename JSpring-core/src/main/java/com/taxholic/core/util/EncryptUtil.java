@@ -40,12 +40,5 @@ public class EncryptUtil {
 		
 		return cryptor.decrypt(message);
 	}
-	
-	public void main(){
-		String t = encrypt("1234");
-		System.out.println(t);
-	}
-
-	
 
 }

@@ -2,6 +2,7 @@ package com.taxholic.core.configuration.web;
 
 import java.io.IOException;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,11 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.json.MappingJacksonJsonView;
 import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
 import org.springframework.web.servlet.view.tiles3.TilesView;
+
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.*;
+import ch.qos.logback.core.joran.spi.JoranException;
+
 
 @Configuration
 @EnableWebMvc
@@ -91,6 +97,5 @@ public class SpringMvcConfiguration extends WebMvcConfigurerAdapter {
     	beanNameViewResolver.setOrder(0);
         return beanNameViewResolver;
     }
-    
 
 }

@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
+	 
+	 <property name="output" value="e:/logs" />
+	 
+	 <appender name="FILE_LOG_APP" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${output}/app_%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger - %msg%n</Pattern>
+		</layout>
+	</appender>
+	 
 	
 	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
 		<layout class="ch.qos.logback.classic.PatternLayout">
@@ -7,57 +22,15 @@
 			<Pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger - %msg%n</Pattern>
 		</layout>
 	</appender>
-	<!-- 
-	<filter class="ch.qos.logback.core.filter.EvaluatorFilter">
-         <evaluator>
-             <expression>return message.contains("Hikari");</expression>
-         </evaluator>
-         <OnMismatch>NEUTRAL</OnMismatch>
-         <OnMatch>DENY</OnMatch>
-     </filter>
-	 -->
-	<logger name="org.springframework" level="info" additivity="false" >
+
+	<logger name="jdbc.sqlonly" level="debug" additivity="false" >
 		<appender-ref ref="console" />
 	</logger>
-<!-- 	<logger name="org.apache.commons" additivity="false" >
-		<level value="INFO" />
-		<appender-ref ref="CONSOLE" />
+	<logger name="org.springframework" level="info" additivity="false" >
+		<appender-ref ref="console" />
+		<appender-ref ref="FILE_LOG_APP" />
 	</logger>
-	<logger name="org.mybatis.spring" additivity="false" >
-		<level value="DEBUG" />
-		<appender-ref ref="CONSOLE" />
-	</logger>
-	<logger name="org.apache.ibatis" additivity="false">
-		<level value="DEBUG" />
-		<appender-ref ref="CONSOLE" />
-	</logger>
-	 <logger name="java.sql.Connection" additivity="false" >
-		<level value="DEBUG" />
-		<appender-ref ref="CONSOLE" />
-	</logger> 
-	<logger name="java.sql.Statement" additivity="false" >
-		<level value="DEBUG" />
-		<appender-ref ref="CONSOLE" />
-	</logger>
-	<logger name="java.sql.PreparedStatement" additivity="false" >
-		<level value="DEBUG" />
-		<appender-ref ref="CONSOLE" />
-	</logger>
-	<logger name="java.sql.ResultSet" additivity="false" >
-		<level value="DEBUG" />
-		<appender-ref ref="CONSOLE" />
-	</logger>
-	 <logger name="org.apache.catalina" additivity="false" >
-		<level value="DEBUG" />
-		<appender-ref ref="CONSOLE" />
-	</logger>
-	
-	<logger name="org.springframework.security" additivity="false" >
-		<level value="WARN" />
-		<appender-ref ref="CONSOLE" />
-	</logger>
-	 -->
-	<logger name="com.taxholic.core" level="info"	additivity="false"> 
+	<logger name="com.taxholic.core" level="info"	additivity="false">
 		<appender-ref ref="console" />
 	</logger>
 

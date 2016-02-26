@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.taxholic.web.admin.tree.service.TreetService;
+import com.taxholic.web.admin.tree.service.TreetServiceD;
 
 @Controller
 @RequestMapping("/ajax/")
@@ -23,12 +23,15 @@ public class ajaxController{
 	
 	
 	@Autowired
-	TreetService treeService;
+	TreetServiceD treeService;
+	
+	@Autowired
+	TreetServiceD treeServiced;
 	
 	@RequestMapping(value = "/treeList.do", method = RequestMethod.GET)
 	@ResponseBody
 	public Object getJson(HttpServletRequest request,Model model) {
-		List<Map<String, Object>> resultMap = (List<Map<String, Object>>) treeService.getList(request);
+		List<Map<String, Object>> resultMap = (List<Map<String, Object>>) treeServiced.getList(request);
 	    
 		return resultMap;
 	}
