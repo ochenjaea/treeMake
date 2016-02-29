@@ -2,13 +2,15 @@ package com.taxholic.web.admin.tree.dto;
 
 import org.springframework.stereotype.Repository;
 
+import com.taxholic.core.annotation.Encrypt;
+
 @Repository
 public class Tree {
 	
 	private int seq;
-	
+	@Encrypt
 	private String groupName;
-	
+	@Encrypt
 	private String updateName;
 	
 	private int parentSeq;

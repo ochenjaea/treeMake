@@ -80,7 +80,6 @@
 			GROUP_NAME = #{updateName}
 		WHERE
 			SEQ = #{seq}
-			AND GROUP_NAME = #{groupName}
 	</update>
 
 	<update id="updateTreeNodePosition">
@@ -111,10 +110,15 @@
 			SEQ
 			,GROUP_NAME
 			,URL
+			,PARENT_SEQ
+			,LEVEL
+			,ORDER_NUM
 		FROM 
 			TB_GROUP 
 		WHERE 
 			PARENT_SEQ = #{seq}
+		ORDER BY 
+			ORDER_NUM
 	</select>
 	
 	<insert id="copyNode">
@@ -123,11 +127,13 @@
 			GROUP_NAME
 			,URL
 			,PARENT_SEQ
+			,ORDER_NUM
 		) 
 		SELECT 
 			GROUP_NAME
 			,URL
 			,#{parentSeq} 
+			,ORDER_NUM
 		FROM 
 			TB_GROUP 
 		WHERE 

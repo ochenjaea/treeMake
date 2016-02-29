@@ -107,7 +107,7 @@
 		}else{
 			$('#jstree_demo').jstree({
 				"core" : {
-					"animation" : 0,
+					"animation" : 2,
 					"check_callback" : true,
 					'force_text' : true,
 					"themes" : { "stripes" : true },
@@ -121,7 +121,7 @@
 						}
 					}
 				},
-				"plugins" : [ "contextmenu", "dnd", "search", "state","checkbox"],
+				"plugins" : [ "contextmenu", "dnd", "search","checkbox"],
 				"contextmenu": {items: context_menu}
 			}).bind("move_node.jstree", function (event, data) {
 		        treeControl("move",data);
@@ -306,8 +306,20 @@
 				param["parent_id"] = data.parent;
 				param["old_parent"] = data.old_parent;
 				var orderId = "";
+				var checkLevel = 0;
+				
+				if(data.parent == "#"){
+					checkLevel = "1";
+				}else{
+					checkLevel = parseInt($("#"+data.parent).attr("aria-level"))+1
+				}
+				
 				for(var i=0;i<$("#"+data.node.id).parent().find("li").length;i++){
-					orderId += $("#"+data.node.id).parent().find("li").eq(i).attr("id")+",";
+					
+					if(checkLevel.toString() == $("#"+data.node.id).parent().find("li").eq(i).attr("aria-level")){
+						orderId += $("#"+data.node.id).parent().find("li").eq(i).attr("id")+",";
+					}
+					
 				}
 				
 				orderId = orderId.substring(0,orderId.length-1);
