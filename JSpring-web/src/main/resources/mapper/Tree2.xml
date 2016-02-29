@@ -4,15 +4,32 @@
 
 <mapper namespace="tree2">
 
+	<select id="getOneTree" resultType="com.taxholic.web.admin.tree.dto.Tree">
+			SELECT
+				SEQ
+				,GROUP_NAME
+				,URL
+				,PARENT_SEQ
+				,LEVEL
+				,ORDER_NUM
+			FROM 
+				TB_GROUP
+			WHERE SEQ = #{parentSeq}
+			ORDER BY ORDER_NUM
+	</select>
+
 	<select id="getTree" resultType="com.taxholic.web.admin.tree.dto.Tree">
 		SELECT
 			SEQ
 			,GROUP_NAME
 			,URL
 			,PARENT_SEQ
+			,LEVEL
+			,ORDER_NUM
 		FROM 
 			TB_GROUP
-		WHERE PARENT_SEQ = #{parentSeq};
+		WHERE PARENT_SEQ = #{parentSeq}
+		ORDER BY ORDER_NUM
 	</select>
 	
 	<select id="checkChildNodeCnt" parameterType="java.util.HashMap" resultType="int">
@@ -20,7 +37,7 @@
 			COUNT(SEQ) AS CNT
 		FROM 
 			TB_GROUP
-		WHERE PARENT_SEQ = #{parentSeq};
+		WHERE PARENT_SEQ = #{parentSeq}
 	</select>
 	
 	<select id="checkChildNode" parameterType="java.util.HashMap" resultType="com.taxholic.web.admin.tree.dto.Tree">
@@ -28,16 +45,20 @@
 			SEQ
 		FROM 
 			TB_GROUP
-		WHERE PARENT_SEQ = #{seq};
+		WHERE PARENT_SEQ = #{seq}
 	</select>
 	
 	<insert id="insertTreeNode">
 		INSERT INTO TB_GROUP(
 			GROUP_NAME
 			,PARENT_SEQ
+			,LEVEL
+			,ORDER_NUM
 		) VALUES(
 			'new Node'
 			,#{parentSeq}
+			,#{level}
+			,#{orderNum}
 		)
 		<selectKey keyProperty="seq" resultType="int" order="AFTER">
 			SELECT LAST_INSERT_ID()
@@ -65,12 +86,17 @@
 	<update id="updateTreeNodePosition">
 		UPDATE TB_GROUP SET
 			PARENT_SEQ = #{parentSeq}
+			,LEVEL = #{level}
+			,ORDER_NUM = #{orderNum}
 		WHERE
 			SEQ = #{seq}
-			
-			<if test="oldParentSeq != null">
-			    AND PARENT_SEQ = #{oldParentSeq}
-			</if>
+	</update>
+	
+	<update id="updateTreeOrder">
+		UPDATE TB_GROUP SET
+			ORDER_NUM = #{orderNum}
+		WHERE
+			SEQ = #{seq}
 	</update>
 	
 	<update id="updateTreeNodeUrl">

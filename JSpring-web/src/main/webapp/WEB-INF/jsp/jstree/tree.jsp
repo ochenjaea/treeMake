@@ -305,6 +305,14 @@
 			}else{
 				param["parent_id"] = data.parent;
 				param["old_parent"] = data.old_parent;
+				var orderId = "";
+				for(var i=0;i<$("#"+data.node.id).parent().find("li").length;i++){
+					orderId += $("#"+data.node.id).parent().find("li").eq(i).attr("id")+",";
+				}
+				
+				orderId = orderId.substring(0,orderId.length-1);
+				
+				param["orderNum"] = orderId;
 			}
 			
 		}else if(flag == "urlChange"){

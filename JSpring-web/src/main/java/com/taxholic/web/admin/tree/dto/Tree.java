@@ -18,6 +18,10 @@ public class Tree {
 	private String Url;
 	
 	private int Cnt;
+	
+	private int level;
+	
+	private int orderNum;
 
 	public int getSeq() {
 		return seq;
@@ -75,4 +79,33 @@ public class Tree {
 		Cnt = cnt;
 	}
 	
+	public int getLevel() {
+		return level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
+	}
+
+	public int getOrderNum() {
+		return orderNum;
+	}
+
+	public void setOrderNum(int orderNum) {
+		this.orderNum = orderNum;
+	}
+
+	public void treeInit(){
+		this.setCnt(0);
+		this.setGroupName("");
+		this.setOldParentSeq(0);
+		this.setParentSeq(0);
+		this.setSeq(0);
+		this.setUpdateName("");
+		this.setUrl("");
+		this.setLevel(0);
+		this.setOrderNum(0);
+		
+		
+	}
 }

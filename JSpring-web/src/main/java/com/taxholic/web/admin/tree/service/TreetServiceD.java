@@ -115,6 +115,7 @@ public class TreetServiceD{
 	
 	public Map<String, Object> treeControl(HttpServletRequest request, HttpServletResponse response){
 		int status = dataMap.get(request.getParameter("type"));
+		treeDto.treeInit();
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		switch(status){
 		case 0:
@@ -184,7 +185,29 @@ public class TreetServiceD{
 		//Map<String,Object> paramMap = new HashMap<String,Object>();
 		//paramMap.put("parent_id", request.getParameter("data").toString().replace("tree_", ""));
 		
+		/*if(Integer.parseInt(request.getParameter("data").toString().replace("tree_", "")) == 0){
+			
+		}*/
 		treeDto.setParentSeq(Integer.parseInt(request.getParameter("data").toString().replace("tree_", "")));
+		List<Tree> getTreelist = this.dao.getList("tree2.getTree",treeDto);
+		
+		if(getTreelist.size() == 0){
+			getTreelist = this.dao.getList("tree2.getOneTree",treeDto);
+			if(Integer.parseInt(request.getParameter("data").toString().replace("tree_", "")) == 0){
+				treeDto.setLevel(1);
+			}else{
+				treeDto.setLevel(getTreelist.get(getTreelist.size()-1).getLevel()+1);
+				
+			}
+			treeDto.setOrderNum(1);
+			
+		}else{
+			int orderNum = getTreelist.get(getTreelist.size()-1).getOrderNum();
+			treeDto.setOrderNum(orderNum+1);
+			
+			int level = getTreelist.get(getTreelist.size()-1).getLevel();
+			treeDto.setLevel(level);			
+		}
 		
 		int t= this.dao.insert("tree2.insertTreeNode", treeDto);
 		return treeDto.getSeq();
@@ -270,6 +293,7 @@ public class TreetServiceD{
 		
 		String parent_id =  request.getParameter("parent_id").toString().replace("tree_", "");
 		String old_parent_id =  request.getParameter("old_parent").toString().replace("tree_", "");
+		//System.out.println(position);
 		
 		if(parent_id.equals("#")){
 			parent_id = "0";
@@ -278,6 +302,7 @@ public class TreetServiceD{
 		if(old_parent_id.equals("#")){
 			old_parent_id = "0";
 		}
+		
 		
 		
 		/*paramMap.put("seq", request.getParameter("id").toString().replace("tree_", ""));
@@ -289,7 +314,26 @@ public class TreetServiceD{
 		treeDto.setOldParentSeq(Integer.parseInt(old_parent_id));
 		treeDto.setParentSeq(Integer.parseInt(parent_id));
 		
+		List<Tree> getTreelist = this.dao.getList("tree2.getOneTree",treeDto);
+		
+		if(getTreelist.size() == 0){
+			treeDto.setLevel(1);
+		}else{
+			treeDto.setLevel(getTreelist.get(getTreelist.size()-1).getLevel()+1);
+		}
+		
+		
 		this.dao.update("tree2.updateTreeNodePosition", treeDto);
+		
+		String orderNums[] = request.getParameter("orderNum").toString().split(",");
+		
+		for(int i=0;i<orderNums.length;i++){
+			
+			treeDto.setSeq(Integer.parseInt(orderNums[i].toString().replace("tree_", "")));
+			treeDto.setOrderNum(i+1);
+			
+			this.dao.update("tree2.updateTreeOrder", treeDto);
+		}
 		
 		return true;
 	}
@@ -357,16 +401,19 @@ public class TreetServiceD{
 	
 	private boolean updateCutTree(HttpServletRequest request){
 		seqMap = new HashMap<String, Object>();
-		Map<String,Object> paramMap = new HashMap<String,Object>();
-		paramMap.put("seq", request.getParameter("old_parent").toString().replace("tree_", ""));
-		paramMap.put("new_parent", request.getParameter("parent_id").toString().replace("tree_", ""));
+	//	Map<String,Object> paramMap = new HashMap<String,Object>();
+	//	paramMap.put("seq", request.getParameter("old_parent").toString().replace("tree_", ""));
+	//	paramMap.put("new_parent", request.getParameter("parent_id").toString().replace("tree_", ""));
+		
 		childTreeNode(request.getParameter("old_parent").toString().replace("tree_", ""));
+		treeDto.setSeq(Integer.parseInt(request.getParameter("old_parent").toString().replace("tree_", "")));
+		treeDto.setParentSeq(Integer.parseInt(request.getParameter("parent_id").toString().replace("tree_", "")));
 		
 		String checkKey = request.getParameter("parent_id").toString().replace("tree_", "").toString();
 		
 		Object check = seqMap.get(checkKey);
 		if(check == null || check  == ""){
-			this.dao.update("tree2.updateTreeNodePosition", paramMap);
+			this.dao.update("tree2.updateTreeNodePosition", treeDto);
 			return true;
 		}else{
 			return false;
