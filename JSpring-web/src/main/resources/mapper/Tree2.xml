@@ -121,6 +121,33 @@
 			ORDER_NUM
 	</select>
 	
+	<select id="checkChildrenNode2" resultType="com.taxholic.web.admin.tree.dto.Tree">
+		SELECT @ROWNUM := @ROWNUM+1 AS RNUM, T.*
+		FROM (
+			SELECT  
+				A.* 
+			FROM 
+				TB_GROUP A
+			INNER JOIN 
+				TB_GROUP B
+			ON 
+				B.PARENT_SEQ > #{parentSeq}
+			 	AND A.SEQ >= B.PARENT_SEQ
+				GROUP BY A.SEQ, A.PARENT_SEQ
+				ORDER BY LEVEL,ORDER_NUM
+		) AS T 
+			WHERE (@ROWNUM:=0)=0;
+	</select>
+	
+	<select id="checkNewParentLevel" resultType="int">
+		SELECT 
+			LEVEL
+		FROM
+			TB_GROUP
+		WHERE
+			SEQ = #{parentSeq}
+	</select>
+	
 	<insert id="copyNode">
 		INSERT INTO  TB_GROUP
 		(
@@ -128,12 +155,14 @@
 			,URL
 			,PARENT_SEQ
 			,ORDER_NUM
+			,LEVEL
 		) 
 		SELECT 
 			GROUP_NAME
 			,URL
 			,#{parentSeq} 
 			,ORDER_NUM
+			,#{level}+LEVEL
 		FROM 
 			TB_GROUP 
 		WHERE 
@@ -142,4 +171,13 @@
 			SELECT LAST_INSERT_ID()
 		</selectKey>
 	</insert>
+	
+	<update id="cleanOrderNum">
+		UPDATE 
+			TB_GROUP
+		SET
+			ORDER_NUM = #{orderNum}
+		WHERE
+			SEQ = #{seq}
+	</update>
 </mapper> 

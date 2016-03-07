@@ -8,9 +8,9 @@ import com.taxholic.core.annotation.Encrypt;
 public class Tree {
 	
 	private int seq;
-	@Encrypt
+
 	private String groupName;
-	@Encrypt
+
 	private String updateName;
 	
 	private int parentSeq;

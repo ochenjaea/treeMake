@@ -367,11 +367,53 @@ public class TreetServiceD{
 	//	seqMap.remove("");
 		treeDto.setSeq(Integer.parseInt(request.getParameter("copy_seq").toString().replace("tree_", "")));
 		treeDto.setParentSeq(Integer.parseInt(request.getParameter("new_parent").toString().replace("tree_", "")));
-		int seq = this.dao.insert("tree2.copyNode", treeDto);
 		
+		int level = this.dao.getInt("tree2.checkNewParentLevel", treeDto);
+		treeDto.setLevel(level);
+		int seq = this.dao.insert("tree2.copyNode", treeDto);		
 		
 		updateCopyChildTree(treeDto.getSeq(),Integer.parseInt(request.getParameter("copy_seq").toString().replace("tree_", "")));
+	
+		
+		cleanOrderNum(Integer.parseInt(request.getParameter("new_parent").toString().replace("tree_", "")));
+		
+		
 		return true;
+	}
+	
+	private void cleanOrderNum(int new_seq){
+		treeDto.setParentSeq(new_seq);
+		List<Tree> resultListMap =this.dao.getList("tree2.checkChildrenNode2",treeDto);
+
+		Map<Integer, Integer> newOrder = new HashMap<Integer, Integer>();
+		int beforeLevel  = 0;
+		int tempOrder = 0;
+		int beforeParent = 0;
+		for(int i=0;i<resultListMap.size();i++){
+			
+			if(i==0){
+				tempOrder = 1;
+			}else{
+				if(beforeLevel == resultListMap.get(i).getLevel() && beforeParent ==  resultListMap.get(i).getParentSeq()){
+					tempOrder++;
+				}else{
+					tempOrder =1;
+				}
+			}
+			System.out.println("seq : " + resultListMap.get(i).getSeq() + " new Order : " + tempOrder + " Level : " + resultListMap.get(i).getLevel());
+			
+			newOrder.put(resultListMap.get(i).getSeq(), tempOrder);
+			beforeLevel = resultListMap.get(i).getLevel();
+			beforeParent =  resultListMap.get(i).getParentSeq();
+		}
+		
+		for (int mapkey : newOrder.keySet()){
+			
+			treeDto.setSeq(mapkey);
+			treeDto.setOrderNum(newOrder.get(mapkey));
+			
+			this.dao.update("tree2.cleanOrderNum",treeDto);
+	    }
 	}
 	
 	//ss
